@@ -24,7 +24,8 @@ class InformationRequest extends FormRequest
         return [
             'enrolledstudent_id' => 'required|exists:enrolled_students,id',
             'address' => 'required|string|max:255',
-            'school' => 'required|string'
+            'school' => 'required|string',
+            'group_abc' => 'required|string',
         ];
     }
 }

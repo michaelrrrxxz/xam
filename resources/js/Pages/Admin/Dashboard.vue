@@ -15,7 +15,7 @@
             <CardDescription>count</CardDescription>
           </CardHeader>
           <CardContent>
-             <h2 class="text-2xl font-semibold tracking-tight">{{ count.batch }}</h2>
+            <h2 class="text-2xl font-semibold tracking-tight">{{ count.batch }}</h2>
             <div class="mt-2 h-4 w-32 bg-gray-100 dark:bg-gray-700 rounded animate-pulse"></div>
           </CardContent>
         </Card>
@@ -55,36 +55,40 @@
 </template>
 
 <script lang="ts" setup>
-import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { onMounted, ref } from 'vue'
-import api from '@/Api/Axios'
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { onMounted, ref } from 'vue';
+import api from '@/Api/Axios';
 
 interface Count {
-  batch: number
+  batch: number;
 }
 
-const count = ref<Count>({ batch: 0 }) // Use object, not array
+const count = ref<Count>({ batch: 0 }); // Use object, not array
 
 const fetchCount = async () => {
   try {
-    const response = await api.get('/admin/dashboard')
-    count.value = response.data // Assuming API returns { batch: 1 }
+    const response = await api.get('/admin/dashboard');
+    count.value = response.data; // Assuming API returns { batch: 1 }
   } catch (error) {
-    console.error('Failed to fetch dashboard count:', error)
+    console.error('Failed to fetch dashboard count:', error);
   }
-}
+};
 
-onMounted(fetchCount)
+onMounted(fetchCount);
 </script>
-
 
 <style scoped>
 /* Smooth pulsing animation for placeholders */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 .animate-pulse {
   animation: pulse 1.5s ease-in-out infinite;

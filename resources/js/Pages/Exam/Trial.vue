@@ -38,9 +38,7 @@
             ]"
           >
             <!-- Question Number -->
-            <h2 class="font-semibold text-lg mb-3">
-              {{ index + 1 }}. {{ question.question }}
-            </h2>
+            <h2 class="font-semibold text-lg mb-3">{{ index + 1 }}. {{ question.question }}</h2>
 
             <!-- Choices -->
             <div class="space-y-2">
@@ -83,7 +81,6 @@
     </Card>
   </div>
 </template>
-
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';

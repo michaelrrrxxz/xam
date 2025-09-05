@@ -9,6 +9,8 @@ class Information extends Model
     protected $fillable =
     [
     'enrolledstudent_id',
-    'address'
+    'address',
+    'school',
+    'group_abc',
 ];
 }

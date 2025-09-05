@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/Api/Axios';
-import {toast} from 'vue-sonner'
+import { toast } from 'vue-sonner';
 const router = useRouter();
 
 // Reactive form state
@@ -17,8 +17,6 @@ const form = ref({
 
 // Login handler
 const handleLogin = async () => {
-
-
   try {
     const response = await api.post('/login', form.value);
 
@@ -34,11 +32,11 @@ const handleLogin = async () => {
     setTimeout(() => {
       router.push('/dashboard');
     }, 2000);
-  }catch(err){
-    toast.error('Unsuccessful login! Try again...')
-    console.log(err)
+  } catch (err) {
+    toast.error('Unsuccessful login! Try again...');
+    console.log(err);
   }
-}
+};
 </script>
 
 <template>
@@ -56,7 +54,7 @@ const handleLogin = async () => {
         <Input type="password" v-model="form.password" placeholder="********" />
       </div>
 
-   <Input type="text"  />
+      <Input type="text" />
 
       <!-- Submit -->
       <Button type="submit" class="w-full">Login</Button>

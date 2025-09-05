@@ -5,7 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import api from '@/Api/Axios';
 import { toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
@@ -84,7 +90,7 @@ const verifyStudent = async (withAdmin = false) => {
         toast.error('Please correct the highlighted fields.');
       } else if (data.message) {
         if (data.message.includes('Admin credentials required')) {
-          showAdminDialog.value = true; // Open modal
+          showAdminDialog.value = true;
           toast.error('Admin approval required.');
         } else {
           toast.error(data.message);
@@ -93,7 +99,7 @@ const verifyStudent = async (withAdmin = false) => {
         toast.error('Verification failed. Please try again.');
       }
     } else {
-      toast.error('Network error. Please try again.');
+      toast.error('Invalid admin credentials.');
     }
   } finally {
     isLoading.value = false;
@@ -181,7 +187,10 @@ const submitAdminApproval = async () => {
         </div>
         <DialogFooter>
           <Button variant="outline" @click="showAdminDialog = false">Cancel</Button>
-          <Button :disabled="isAdminLoading" @click="submitAdminApproval">
+          <Button
+            :disabled="isAdminLoading || !adminEmail || !adminPassword"
+            @click="submitAdminApproval"
+          >
             {{ isAdminLoading ? 'Verifying...' : 'Approve' }}
           </Button>
         </DialogFooter>

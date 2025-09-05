@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/admin/results',
-    name: 'Admin-Result',
+    name: 'Result',
     component: AdminResult,
     meta: { title: `Result: ${appName}`, requiresAuth: true },
     props: true,

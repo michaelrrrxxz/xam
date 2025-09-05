@@ -39,7 +39,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 
-import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock } from 'lucide-vue-next';
+import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock, RatioIcon } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
 import BatchForm from '@/components/BatchForm.vue';
 
@@ -302,6 +302,9 @@ onMounted(fetchBatch);
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
 
+                      <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
+                        <RatioIcon class="w-4 h-4 mr-2" /> Results
+                      </DropdownMenuItem>
                       <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
                         <Lock class="w-4 h-4 mr-2" /> Lock
                       </DropdownMenuItem>

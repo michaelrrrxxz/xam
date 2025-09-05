@@ -110,8 +110,8 @@ const toggleMode = (val: boolean) => {
 const form = reactive<Question>({
   id: null,
   test_type: '',
-  question: '',           // text mode by default
-  question_image: null,   // image mode fallback
+  question: '', // text mode by default
+  question_image: null, // image mode fallback
   ch1: '',
   ch1_image: null,
   ch2: '',
@@ -127,9 +127,6 @@ const form = reactive<Question>({
   format: 'text',
 });
 
-
-
-
 // ---------- Helpers ----------
 const isUploadable = (v: any): v is UploadableField => v && typeof v === 'object' && 'preview' in v;
 
@@ -144,13 +141,13 @@ const isLikelyImageString = (s: any) => {
 
 // ---------- API / CRUD ----------
 const fetchQuestion = async () => {
-    isLoading.value = true;
+  isLoading.value = true;
   try {
     const response = await api.get('admin/question');
     question.value = response.data;
   } catch (err) {
     console.warn(err);
-  }finally {
+  } finally {
     isLoading.value = false;
   }
 };
@@ -178,8 +175,7 @@ const openEditModal = async (id: number) => {
       return val;
     };
 
-form.question_image = { file: null, preview: normalize(q.question) };
-
+    form.question_image = { file: null, preview: normalize(q.question) };
 
     // Detect if this question is an image (by checking extension or preview field)
     const qIsImage =
@@ -197,12 +193,12 @@ form.question_image = { file: null, preview: normalize(q.question) };
 
     if (qIsImage) {
       // Image mode → convert DB paths to preview objects
-    form.question_image = { file: null, preview: normalize(q.question) };
+      form.question_image = { file: null, preview: normalize(q.question) };
       form.ch1_image = { file: null, preview: normalize(q.ch1) };
-form.ch2_image = { file: null, preview: normalize(q.ch2) };
-form.ch3_image = { file: null, preview: normalize(q.ch3) };
-form.ch4_image = { file: null, preview: normalize(q.ch4) };
-form.ch5_image = { file: null, preview: normalize(q.ch5) };
+      form.ch2_image = { file: null, preview: normalize(q.ch2) };
+      form.ch3_image = { file: null, preview: normalize(q.ch3) };
+      form.ch4_image = { file: null, preview: normalize(q.ch4) };
+      form.ch5_image = { file: null, preview: normalize(q.ch5) };
 
       // Text mode
       form.question = q.question ?? '';
@@ -261,7 +257,6 @@ const resetForm = () => {
     form.ch5_image = null;
   }
 };
-
 
 // File upload handler (works with unified form)
 const handleFileUpload = (e: Event, field: keyof Question) => {
@@ -452,7 +447,7 @@ const filteredQuestion = computed(() => {
           </TableHeader>
 
           <TableBody>
-                        <template v-if="isLoading">
+            <template v-if="isLoading">
               <TableRow v-for="n in 1" :key="n">
                 <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
@@ -461,78 +456,76 @@ const filteredQuestion = computed(() => {
               </TableRow>
             </template>
             <template v-else>
+              <TableRow v-for="q in filteredQuestion" :key="q.id">
+                <TableCell class="max-w-xs">
+                  <!-- show image thumbnail when image, else text -->
 
+                  <!-- If it's an image -->
+                  <div v-if="isUploadable(q.question) || isLikelyImageString(q.question)">
+                    <img
+                      v-if="
+                        isUploadable(q.question) ||
+                        (typeof q.question === 'string' && q.question !== '')
+                      "
+                      :src="
+                        isUploadable(q.question)
+                          ? q.question.preview
+                          : q.question.startsWith('http')
+                            ? q.question
+                            : `/storage/${q.question}`
+                      "
+                      class="max-h-16 rounded"
+                      alt="question"
+                    />
+                  </div>
 
-            <TableRow v-for="q in filteredQuestion" :key="q.id">
-              <TableCell class="max-w-xs">
-                <!-- show image thumbnail when image, else text -->
+                  <!-- If it's plain text -->
+                  <div v-else>
+                    {{ q.question }}
+                  </div>
+                </TableCell>
+                <TableCell>{{
+                  (q.test_type || '').charAt(0).toUpperCase() + (q.test_type || '').slice(1)
+                }}</TableCell>
+                <TableCell>
+                  {{
+                    {
+                      ch1: 'Choice 1',
+                      ch2: 'Choice 2',
+                      ch3: 'Choice 3',
+                      ch4: 'Choice 4',
+                      ch5: 'Choice 5',
+                    }[q.answer] || 'Unknown choice'
+                  }}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                      <Button variant="ghost" size="sm" class="flex items-center gap-1">
+                        <Ellipsis class="w-4 h-4 mr-2" />
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                <!-- If it's an image -->
-                <div v-if="isUploadable(q.question) || isLikelyImageString(q.question)">
-                  <img
-                    v-if="
-                      isUploadable(q.question) ||
-                      (typeof q.question === 'string' && q.question !== '')
-                    "
-                    :src="
-                      isUploadable(q.question)
-                        ? q.question.preview
-                        : q.question.startsWith('http')
-                          ? q.question
-                          : `/storage/${q.question}`
-                    "
-                    class="max-h-16 rounded"
-                    alt="question"
-                  />
-                </div>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
 
-                <!-- If it's plain text -->
-                <div v-else>
-                  {{ q.question }}
-                </div>
-              </TableCell>
-              <TableCell>{{
-                (q.test_type || '').charAt(0).toUpperCase() + (q.test_type || '').slice(1)
-              }}</TableCell>
-              <TableCell>
-                {{
-                  {
-                    ch1: 'Choice 1',
-                    ch2: 'Choice 2',
-                    ch3: 'Choice 3',
-                    ch4: 'Choice 4',
-                    ch5: 'Choice 5',
-                  }[q.answer] || 'Unknown choice'
-                }}
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger as-child>
-                    <Button variant="ghost" size="sm" class="flex items-center gap-1">
-                      <Ellipsis class="w-4 h-4 mr-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
+                      <DropdownMenuItem @click="openEditModal(q.id)">
+                        <Pencil class="w-4 h-4 mr-2" /> Edit
+                      </DropdownMenuItem>
 
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                      <DropdownMenuItem @click="deleteQuestion(q.id)" class="text-red-500">
+                        <Trash class="w-4 h-4 mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
 
-                    <DropdownMenuItem @click="openEditModal(q.id)">
-                      <Pencil class="w-4 h-4 mr-2" /> Edit
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem @click="deleteQuestion(q.id)" class="text-red-500">
-                      <Trash class="w-4 h-4 mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-
-            <TableRow v-if="!question.length">
-              <TableCell colspan="4" class="text-center"> No data available. </TableCell>
-            </TableRow>
-                </template>
+              <TableRow v-if="!question.length">
+                <TableCell colspan="4" class="text-center"> No data available. </TableCell>
+              </TableRow>
+            </template>
           </TableBody>
         </Table>
       </div>

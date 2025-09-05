@@ -111,13 +111,13 @@ const form = reactive<{
 
 // Fetch all enrolledStudents
 const fetchEnrolledStudents = async () => {
-    isLoading.value = true;
+  isLoading.value = true;
   try {
     const response = await api.get('admin/enrolledStudent');
     enrolledStudents.value = response.data;
   } catch (error) {
     console.warn(error);
-  }finally {
+  } finally {
     isLoading.value = false;
   }
 };
@@ -304,42 +304,41 @@ onMounted(fetchEnrolledStudents);
               </TableRow>
             </template>
             <template v-else>
-            <TableRow v-for="e in filteredEnrolledStudents" :key="e.id">
-              <TableCell>{{ e.id_number }}</TableCell>
-              <TableCell>{{ e.last_name }}, {{ e.first_name }} {{ e.middle_name }}</TableCell>
-              <TableCell>{{ e.course }}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger as-child>
-                    <Button variant="ghost" size="sm" class="flex items-center gap-1">
-                      <Ellipsis class="w-4 h-4 mr-2" />
-                    </Button>
-                  </DropdownMenuTrigger>
+              <TableRow v-for="e in filteredEnrolledStudents" :key="e.id">
+                <TableCell>{{ e.id_number }}</TableCell>
+                <TableCell>{{ e.last_name }}, {{ e.first_name }} {{ e.middle_name }}</TableCell>
+                <TableCell>{{ e.course }}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                      <Button variant="ghost" size="sm" class="flex items-center gap-1">
+                        <Ellipsis class="w-4 h-4 mr-2" />
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
 
-                    <DropdownMenuItem @click="openQuestionsPage(e.id)" m>
-                      <BadgeQuestionMark class="w-4 h-4 mr-2" /> Questions
-                    </DropdownMenuItem>
+                      <DropdownMenuItem @click="openQuestionsPage(e.id)" m>
+                        <BadgeQuestionMark class="w-4 h-4 mr-2" /> Questions
+                      </DropdownMenuItem>
 
-                    <DropdownMenuItem @click="openEditModal(e.id)">
-                      <Pencil class="w-4 h-4 mr-2" /> Edit
-                    </DropdownMenuItem>
+                      <DropdownMenuItem @click="openEditModal(e.id)">
+                        <Pencil class="w-4 h-4 mr-2" /> Edit
+                      </DropdownMenuItem>
 
-                    <DropdownMenuItem @click="deleteEnrolledStudent(e.id)" class="text-red-500">
-                      <Trash class="w-4 h-4 mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-            <TableRow v-if="!enrolledStudents.length">
-              <TableCell colspan="3" class="text-center"> No data available. </TableCell>
-            </TableRow>
+                      <DropdownMenuItem @click="deleteEnrolledStudent(e.id)" class="text-red-500">
+                        <Trash class="w-4 h-4 mr-2" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+              <TableRow v-if="!enrolledStudents.length">
+                <TableCell colspan="3" class="text-center"> No data available. </TableCell>
+              </TableRow>
             </template>
-
           </TableBody>
         </Table>
       </div>

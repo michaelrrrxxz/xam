@@ -19,7 +19,11 @@ class ResultController extends Controller
 
     public function show($studentId)
     {
-        $result = Result::where('student_id', $studentId)->latest()->first();
+
+          $result = Result::with(['batch:id,name', 'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'])
+          ->where('student_id', $studentId)
+          ->latest()
+          ->first();
 
         if (!$result) {
             return response()->json(['message' => 'No result found.'], 404);
@@ -105,7 +109,7 @@ class ResultController extends Controller
             ? "BA"
             : ($verbalScore <= 28
                 ? "A"
-                : "Above Average");
+                : "AA");
 
         // Verbal Comprehension Category
         $verbalComprehensionCategory = $verbalComprehensionScore <= 5
@@ -312,28 +316,71 @@ class ResultController extends Controller
         $agent = request()->header('User-Agent');
 
 
-        dd($ip,$agent);
+      $result = Result::create([
+         'student_id' => $validated['student_id'],
+        'batch_id' => $batch->id,
+        'test_ip' => $ip,
+
+        'total_score' => $totalScore,
+        'scaled_score_t'=> $scaledScore->scaled_score_t,
+        'sai_t' => 50,
+        'pba_pr_t' => 50,
+        'pba_s_t' => 50,
+        'pbg_pr_t' => 50,
+        'pbg_s_t' => 50,
 
 
-        $result = Result::create([
-            'student_id' => $validated['student_id'],
-            'batch_id' =>  $batch->id,
-            'total_score' => $totalScore,
-            'verbal' => $verbalScore,
-            'non_verbal' => $nonVerbalScore,
-            'verbal_reasoning' => $verbalReasoningScore,
-            'verbal_comprehension' => $verbalComprehensionScore,
-            'quantitative_reasoning' => $quantitativeReasoningScore,
-            'figural_reasoning' => $figuralReasoningScore,
+        'verbal' => $verbalScore,
+        'scaled_score_v'=> $verbalscaledScore->scaled_score_v,
+        'sai_v' => 10,
+        'pba_pr_v'=> 10,
+        'pba_s_v' => 10,
+        'pbg_pr_v'=> 10,
+        'pbg_s_v'=> 10,
 
-            'total_performance_category' => $totalPerformanceCategory,
-            'verbal_performance_category' => $verbalPerformanceCategory,
-            'verbal_comprehension_category' => $verbalComprehensionCategory,
-            'verbal_reasoning_category' => $verbalReasoningCategory,
-            'non_verbal_performance_category' => $nonVerbalPerformanceCategory,
-            'figural_reasoning_category' => $figuralReasoningCategory,
-            'quantitative_reasoning_category' => $quantitativeReasoningCategory,
-        ]);
+        'non_verbal' => $nonVerbalScore,
+        'scaled_score_nv' => $nonverbalscaledScore->scaled_score_nv,
+        'sai_nv' => 20,
+        'pba_pr_nv'=> 20,
+        'pba_s_nv' => 20,
+        'pbg_pr_nv' => 20,
+        'pbg_s_nv'=> 20,
+
+        'verbal_comprehension' => $verbalComprehensionScore,
+        'verbal_comprehension_category' => $verbalComprehensionCategory,
+
+        'verbal_reasoning' => $verbalReasoningScore,
+        'verbal_reasoning_category' => $verbalReasoningCategory,
+        'figural_reasoning' => $figuralReasoningScore,
+        'figural_reasoning_category' => $figuralReasoningCategory,
+        'quantitative_reasoning' => $quantitativeReasoningScore,
+        'quantitative_reasoning_category' => $quantitativeReasoningCategory,
+
+        'total_performance_category' => $totalPerformanceCategory,
+        'verbal_performance_category' => $verbalPerformanceCategory ,
+        'non_verbal_performance_category' => $nonVerbalPerformanceCategory,
+      ]);
+
+
+        // $result = Result::create([
+        //     'student_id' => $validated['student_id'],
+        //     'batch_id' =>  $batch->id,
+        //     'total_score' => $totalScore,
+        //     'verbal' => $verbalScore,
+        //     'non_verbal' => $nonVerbalScore,
+        //     'verbal_reasoning' => $verbalReasoningScore,
+        //     'verbal_comprehension' => $verbalComprehensionScore,
+        //     'quantitative_reasoning' => $quantitativeReasoningScore,
+        //     'figural_reasoning' => $figuralReasoningScore,
+
+        //     'total_performance_category' => $totalPerformanceCategory,
+        //     'verbal_performance_category' => $verbalPerformanceCategory,
+        //     'verbal_comprehension_category' => $verbalComprehensionCategory,
+        //     'verbal_reasoning_category' => $verbalReasoningCategory,
+        //     'non_verbal_performance_category' => $nonVerbalPerformanceCategory,
+        //     'figural_reasoning_category' => $figuralReasoningCategory,
+        //     'quantitative_reasoning_category' => $quantitativeReasoningCategory,
+        // ]);
 
         return response()->json([
             'message' => 'Exam completed successfully',

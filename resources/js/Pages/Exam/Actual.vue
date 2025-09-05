@@ -6,29 +6,24 @@
       </CardHeader>
 
       <CardContent>
-   <!-- Timer + Unanswered Tracker -->
-<div
-  class="sticky top-0 z-50 bg-background border-b mb-6 p-3 flex justify-between items-center"
->
-  <!-- Timer -->
-  <div class="w-full max-w-xs">
-    <Label>Time Remaining</Label>
-    <div class="flex items-center gap-2">
-      <Progress :value="progressPercent" :class="progressColor" class="flex-1 h-3" />
-      <span class="font-mono text-sm">{{ formattedTime }}</span>
-    </div>
-  </div>
+        <!-- Timer + Unanswered Tracker -->
+        <div
+          class="sticky top-0 z-50 bg-background border-b mb-6 p-3 flex justify-between items-center"
+        >
+          <!-- Timer -->
+          <div class="w-full max-w-xs">
+            <Label>Time Remaining</Label>
+            <div class="flex items-center gap-2">
+              <Progress :value="progressPercent" :class="progressColor" class="flex-1 h-3" />
+              <span class="font-mono text-sm">{{ formattedTime }}</span>
+            </div>
+          </div>
 
-  <!-- Unanswered Counter -->
-  <Button
-    variant="outline"
-    class="ml-4"
-    @click="scrollToNearestUnanswered"
-  >
-    {{ unansweredCount }} Unanswered
-  </Button>
-</div>
-
+          <!-- Unanswered Counter -->
+          <Button variant="outline" class="ml-4" @click="scrollToNearestUnanswered">
+            {{ unansweredCount }} Unanswered
+          </Button>
+        </div>
 
         <!-- Student Info -->
         <div
@@ -63,9 +58,7 @@
             ]"
           >
             <!-- Question Number -->
-            <h2 class="font-semibold text-lg mb-3">
-              {{ index + 1 }}. {{ question.question }}
-            </h2>
+            <h2 class="font-semibold text-lg mb-3">{{ index + 1 }}. {{ question.question }}</h2>
 
             <!-- Choices -->
             <div class="space-y-2">
@@ -124,7 +117,7 @@ const allAnswered = computed(() => {
 });
 
 // ✅ Timer (45 minutes)
-const totalTime = 45 * 60; // 2700 seconds
+const totalTime = 10; // 2700 seconds
 const timeLeft = ref(totalTime);
 let timerInterval: number | null = null;
 
@@ -180,22 +173,22 @@ const unansweredCount = computed(() => {
   return questions.value.filter((q) => !answers.value[q.id]).length;
 });
 
-const questionRefs = ref<Record<number, HTMLElement | null>>({});
-const setQuestionRef = (id: number) => (el: HTMLElement | null) => {
+import type { ComponentPublicInstance } from 'vue';
+
+const questionRefs = ref<Record<number, Element | ComponentPublicInstance | null>>({});
+const setQuestionRef = (id: number) => (el: Element | ComponentPublicInstance | null) => {
   if (el) questionRefs.value[id] = el;
 };
 
 const scrollToNearestUnanswered = () => {
-  const unanswered = questions.value
-    .filter((q) => !answers.value[q.id])
-    .map((q) => q.id);
+  const unanswered = questions.value.filter((q) => !answers.value[q.id]).map((q) => q.id);
 
   if (unanswered.length === 0) return;
 
   // pick the first unanswered
   const nearestId = unanswered[0];
   const target = questionRefs.value[nearestId];
-  if (target) {
+  if (target && target instanceof Element) {
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 };

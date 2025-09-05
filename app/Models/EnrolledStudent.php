@@ -19,4 +19,12 @@ class EnrolledStudent extends Model
         'course',
         'gender'
 ];
+
+
+public function information()
+{
+    return $this->hasOne(Information::class, 'enrolledstudent_id');
 }
+}
+
+

@@ -42,73 +42,60 @@
         </div>
 
         <!-- Address Section -->
-<div class="space-y-4">
-  <!-- Region -->
-  <div class="grid gap-2 w-full">
-    <Label>Region</Label>
-    <Select v-model="selectedRegion" @update:modelValue="onRegionChange">
-         <SelectTrigger class="w-full">
-        <SelectValue placeholder="Select Region" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem
-          v-for="(region, key) in addressData"
-          :key="key"
-          :value="key"
-        >
-          {{ region.region_name }}
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
+        <div class="space-y-4">
+          <!-- Region -->
+          <div class="grid gap-2 w-full">
+            <Label>Region</Label>
+            <Select v-model="selectedRegion" @update:modelValue="onRegionChange">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select Region" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="(region, key) in addressData" :key="key" :value="key">
+                  {{ region.region_name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-  <!-- Province -->
-<div class="grid gap-2 w-full">
-    <Label>Province</Label>
-    <Select
-      v-model="selectedProvince"
-      @update:modelValue="onProvinceChange"
-      :disabled="!selectedRegion"
-    >
-      <SelectTrigger class="w-full">
-        <SelectValue placeholder="Select Province" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem
-          v-for="(province, key) in provinces"
-          :key="key"
-          :value="key"
-        >
-          {{ key }}
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
+          <!-- Province -->
+          <div class="grid gap-2 w-full">
+            <Label>Province</Label>
+            <Select
+              v-model="selectedProvince"
+              @update:modelValue="onProvinceChange"
+              :disabled="!selectedRegion"
+            >
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select Province" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="(province, key) in provinces" :key="key" :value="key">
+                  {{ key }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-  <!-- Municipality -->
-  <div class="grid gap-2 w-full">
-    <Label>Municipality</Label>
-    <Select
-      v-model="selectedMunicipality"
-      @update:modelValue="updateAddress"
-      :disabled="!selectedProvince"
-    >
-        <SelectTrigger class="w-full">
-        <SelectValue placeholder="Select Municipality" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem
-          v-for="(municipality, key) in municipalities"
-          :key="key"
-          :value="key"
-        >
-          {{ key }}
-        </SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
-</div>
-
+          <!-- Municipality -->
+          <div class="grid gap-2 w-full">
+            <Label>Municipality</Label>
+            <Select
+              v-model="selectedMunicipality"
+              @update:modelValue="updateAddress"
+              :disabled="!selectedProvince"
+            >
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select Municipality" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="(municipality, key) in municipalities" :key="key" :value="key">
+                  {{ key }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <div class="grid gap-2">
           <Label>School </Label>
@@ -124,6 +111,23 @@
           <datalist id="schoolList">
             <option v-for="school in schools" :key="school.id" :value="school.name"></option>
           </datalist>
+        </div>
+
+
+        <div class="grid gap-2 w-full">
+        <Label>Group</Label>
+        <Select v-model="form.group_abc">
+            <SelectTrigger class="w-full">
+            <SelectValue placeholder="Select Group" />
+            </SelectTrigger>
+            <SelectContent>
+            <SelectItem value="a">A</SelectItem>
+            <SelectItem value="b">B</SelectItem>
+            <SelectItem value="c">C</SelectItem>
+            <SelectItem value="d">D</SelectItem>
+            <SelectItem value="e">E</SelectItem>
+            </SelectContent>
+        </Select>
         </div>
 
         <!-- Submit Button -->
@@ -142,8 +146,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'vue-sonner';
 import api from '@/Api/Axios';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Import JSON address data
 import addressJson from '@/assets/data.json';
@@ -158,6 +167,7 @@ const form = ref({
   address: '',
   enrolledstudent_id: null,
   school: '',
+  group_abc: '',
 });
 
 interface School {
@@ -253,6 +263,14 @@ const submitInfo = async () => {
       JSON.stringify({
         school: form.value.school,
       })
+
+    );
+    localStorage.setItem(
+      'info',
+      JSON.stringify({
+        group_abc: form.value.group_abc,
+      })
+
     );
   } catch (error) {
     toast.error('Failed to save information. Please try again.');

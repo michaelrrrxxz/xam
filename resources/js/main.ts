@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/index';
 import { Toaster } from './components/ui/sonner';
-import 'tippy.js/dist/tippy.css'
+import 'tippy.js/dist/tippy.css';
 
 const app = createApp(App);
 

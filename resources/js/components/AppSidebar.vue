@@ -74,11 +74,11 @@ const data = ref({
   ],
   navMain: [
     {
-        title: 'Dashboard',
-        url: '/dashboard',
-        icon: GalleryVerticalEnd,
-        isActive: true,
-  },
+      title: 'Dashboard',
+      url: '/dashboard',
+      icon: GalleryVerticalEnd,
+      isActive: true,
+    },
     {
       title: 'Batch',
       url: '/batch',
@@ -98,11 +98,11 @@ const data = ref({
       isActive: true,
     },
     {
-        title: 'Results',
-        url: '/admin/results',
-        icon: Paperclip,
-        isActive: true
-    }
+      title: 'Results',
+      url: '/admin/results',
+      icon: Paperclip,
+      isActive: true,
+    },
   ],
 });
 </script>
