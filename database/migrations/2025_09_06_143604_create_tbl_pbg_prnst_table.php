@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Migrations;
+
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,7 +20,7 @@ class CreateTblPbgPrnstTable extends Migration
             $table->integer('stanines')->nullable();
             $table->integer('percentile_ranks')->nullable();
             $table->integer('scaled_score')->nullable();
-            
+
         });
     }
 

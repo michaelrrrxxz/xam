@@ -1,7 +1,5 @@
 <?php
 
-namespace Database\Migrations;
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,7 +23,7 @@ class CreateTblSstosai18vTable extends Migration
             $table->integer('month_c')->nullable();
             $table->integer('sai_d')->nullable();
             $table->integer('month_d')->nullable();
-            
+
         });
     }
 
