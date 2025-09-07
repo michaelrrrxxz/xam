@@ -38,30 +38,40 @@
             ]"
           >
             <!-- Question Number -->
-            <h2 class="font-semibold text-lg mb-3">{{ index + 1 }}. {{ question.question }}</h2>
+                    <h2
+  class="font-semibold text-lg mb-3"
+  v-html="(index + 1) + '. ' + question.question">
+</h2>
 
             <!-- Choices -->
-            <div class="space-y-2">
-              <label
-                v-for="(choice, key) in getChoices(question)"
-                :key="key"
-                class="flex items-center space-x-2 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  class="w-4 h-4"
-                  :name="'question-' + question.id"
-                  :value="key"
-                  v-model="answers[question.id]"
-                />
-                <span>{{ choice }}</span>
-              </label>
-            </div>
+          <div class="space-y-2">
+  <label
+    v-for="(choice, key) in getChoices(question)"
+    :key="key"
+    class="flex items-center space-x-2 cursor-pointer"
+  >
+    <input
+      type="radio"
+      class="w-4 h-4"
+      :name="'question-' + question.id"
+      :value="key"
+      v-model="answers[question.id]"
+    />
+
+    <!-- ✅ Render choice -->
+    <span v-if="isImageUrl(choice)">
+      <img :src="choice" alt="choice image" class="w-20 h-20 object-cover rounded" />
+    </span>
+    <span v-else-if="hasHtml(choice)" v-html="choice"></span>
+    <span v-else>{{ choice }}</span>
+  </label>
+</div>
+
           </div>
 
           <!-- Submit Button -->
           <Button v-if="allAnswered" class="w-full mt-4 font-semibold" @click="goToExam">
-            Submit Answers
+            Submit and Proceed
           </Button>
         </div>
 
@@ -100,6 +110,14 @@ const loading = ref(true);
 const submitted = ref(false);
 
 const router = useRouter();
+
+const isImageUrl = (str: string) => {
+  return /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(str);
+};
+
+const hasHtml = (str: string) => {
+  return /<\/?[a-z][\s\S]*>/i.test(str);
+};
 
 // Computed to check if all questions are answered
 const allAnswered = computed(() => {

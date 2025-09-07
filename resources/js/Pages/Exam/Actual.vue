@@ -65,22 +65,30 @@
 
 
             <!-- Choices -->
-            <div class="space-y-2">
-              <label
-                v-for="(choice, key) in getChoices(question)"
-                :key="key"
-                class="flex items-center space-x-2 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  class="w-4 h-4"
-                  :name="'question-' + question.id"
-                  :value="key"
-                  v-model="answers[question.id]"
-                />
-                <span>{{ choice }}</span>
-              </label>
-            </div>
+        <!-- Choices -->
+<div class="space-y-2">
+  <label
+    v-for="(choice, key) in getChoices(question)"
+    :key="key"
+    class="flex items-center space-x-2 cursor-pointer"
+  >
+    <input
+      type="radio"
+      class="w-4 h-4"
+      :name="'question-' + question.id"
+      :value="key"
+      v-model="answers[question.id]"
+    />
+
+    <!-- ✅ Render choice -->
+    <span v-if="isImageUrl(choice)">
+      <img :src="choice" alt="choice image" class="w-20 h-20 object-cover rounded" />
+    </span>
+    <span v-else-if="hasHtml(choice)" v-html="choice"></span>
+    <span v-else>{{ choice }}</span>
+  </label>
+</div>
+
           </div>
 
           <!-- Submit Button -->
@@ -98,7 +106,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -113,6 +121,14 @@ const questions = ref<any[]>([]);
 const answers = ref<Record<number, string>>({});
 const loading = ref(true);
 const submitted = ref(false);
+
+const isImageUrl = (str: string) => {
+  return /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(str);
+};
+
+const hasHtml = (str: string) => {
+  return /<\/?[a-z][\s\S]*>/i.test(str);
+};
 
 const router = useRouter();
 
@@ -141,6 +157,18 @@ const progressColor = computed(() => {
 });
 
 onMounted(async () => {
+const storedAnswers = localStorage.getItem('examAnswers');
+  if (storedAnswers) {
+    answers.value = JSON.parse(storedAnswers);
+  }
+
+  watch(
+  answers,
+  (newAnswers) => {
+    localStorage.setItem('examAnswers', JSON.stringify(newAnswers));
+  },
+  { deep: true }
+);
   const storedStudent = localStorage.getItem('studentData');
   const storedSchool = localStorage.getItem('schoolData');
 
@@ -219,7 +247,7 @@ const examResult = async () => {
     };
 
     await api.post('examinee/result', payload);
-
+    localStorage.removeItem('examAnswers');
     toast.success('Exam Finished! Redirecting...');
     submitted.value = true;
 

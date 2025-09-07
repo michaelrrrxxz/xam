@@ -16,9 +16,10 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        $question = Question::get();
-        return response()->json($question,200);
+        $questions = Question::orderBy('id', 'asc')->get();
+        return response()->json($questions, 200);
     }
+
 
     /**
      * Show the form for creating a new resource.

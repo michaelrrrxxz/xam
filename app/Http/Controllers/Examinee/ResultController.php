@@ -59,18 +59,21 @@ class ResultController extends Controller
 
 
         // $totalScore = $studentAnswers->where('is_correct', true)->count();
-        $totalScore = 36;
+        $totalScore = 12;
 
 
         // $verbalScore = $studentAnswers->filter(fn($a) =>
         //     strtolower($a->question->test_type) === 'verbal' && $a->is_correct
         // )->count();
 
-        $verbalScore = 30;
+        $verbalScore = 7;
 
-        $nonVerbalScore = $studentAnswers->filter(fn($a) =>
-            strtolower($a->question->test_type) === 'non-verbal' && $a->is_correct
-        )->count();
+        // $nonVerbalScore = $studentAnswers->filter(fn($a) =>
+        //     strtolower($a->question->test_type) === 'non-verbal' && $a->is_correct
+        // )->count();
+
+        $nonVerbalScore = 5;
+
 
 
         $verbalReasoningScore = $studentAnswers->filter(fn($a) =>
@@ -186,6 +189,7 @@ class ResultController extends Controller
 
 
 
+
         $sstosai = '';
         if ($age_month >= 18) {
             $sstosai = 'tbl_sstosai_18t';
@@ -217,62 +221,147 @@ class ResultController extends Controller
 
 
 
+
+
        if ($sai && isset($sai->$sstosai_sai)) {
             $saiValue = $sai->$sstosai_sai;
         } else {
 
-            $saiValue = $scaledScore->raw_score_t > 700 ? '150' : '50';
+            $saiValue = $scaledScore->raw_score_t > 700 ? 150 : 50;
         }
-
 
 
 
         $pbg = DB::table('tbl_pbg_prnst')
-        ->where('scaled_score', $scaledScore->scaled_score_t)
-        ->first();
-
-
-        $pba = DB::table('tbl_pba_prns')
-        ->where('sai', $sai->$sstosai_sai)
-        ->first();
-
-
-        // done
-
-    //Verbal Scaled Score
-        if($verbalScore=='0'){
-            $verbalScore=1;
-        }
-        $verbalscaledScore = Db::table('rstoss')->where('raw_score_v',$verbalScore )->first();
-
-
-        if($age_year >='18'){
-        $sstosai = "tbl_sstosai_18v";
-        }else if($age_year =='17'){
-            $sstosai = "tbl_sstosai_17v";
-            }else if($age_year <='16'){
-                $sstosai = "tbl_sstosai_16v";
-                }
-
-//saiv
-
-          $sai_v = Db::table($sstosai)->where($sstosai_m, $verbalscaledScore->scaled_score_v )->first();
-
-            if ($sai_v && isset($sai_v->$sstosai_sai)) {
-                $saiVerbalValue = $sai_v->$sstosai_sai;
-            } else {
-                $saiVerbalValue = $verbalscaledScore->raw_score_v > 700 ? '150' : '50';
-            }
-
-
-
-              $pbg_v = DB::table('tbl_pbg_prnsv')
-            ->where('scaled_score', $verbalscaledScore->scaled_score_v)
+            ->where('scaled_score', $scaledScore->scaled_score_t)
             ->first();
 
-                    $pba_v = DB::table('tbl_pba_prns')
-                ->where('sai', $sai_v->$sstosai_sai)
-                ->first();
+        if ($pbg) {
+
+            if ($pbg->stanines == null && $pbg->percentile_ranks == null) {
+                if ($scaledScore->scaled_score_t > 700) {
+                    $pbg->percentile_ranks = 99;
+                    $pbg->stanines = 9;
+                } else if ($scaledScore->scaled_score_t < 700) {
+                    $pbg->percentile_ranks = 1;
+                    $pbg->stanines = 1;
+                }
+            }
+        } else {
+
+            $pbg = (object)[
+                'percentile_ranks' => $scaledScore->scaled_score_t > 700 ? 99 : 1,
+                'stanines'         => $scaledScore->scaled_score_t > 700 ? 9  : 1,
+            ];
+        }
+
+
+        // Get row
+        $pba = DB::table('tbl_pba_prns')
+            ->where('sai', $sai->$sstosai_sai)
+            ->first();
+
+        if ($pba) {
+            // row found → check if fields are null
+            if ($pba->stanines == null && $pba->percentile_ranks == null) {
+                if ($sai->$sstosai_sai > 700) {
+                    $pba->percentile_ranks = 99;
+                    $pba->stanines = 9;
+                } else if ($sai->$sstosai_sai < 700) {
+                    $pba->percentile_ranks = 1;
+                    $pba->stanines = 1;
+                }
+            }
+        } else {
+            // no row found → create default object
+            $pba = (object)[
+                'percentile_ranks' => $sai->$sstosai_sai > 700 ? 99 : 1,
+                'stanines'         => $sai->$sstosai_sai > 700 ? 9  : 1,
+            ];
+        }
+
+
+// Verbal Scaled Score
+if ($verbalScore == '0') {
+    $verbalScore = 1;
+}
+
+$verbalscaledScore = DB::table('rstoss')
+    ->where('raw_score_v', $verbalScore)
+    ->first();
+
+
+
+if ($age_year >= '18') {
+    $sstosai = "tbl_sstosai_18v";
+} else if ($age_year == '17') {
+    $sstosai = "tbl_sstosai_17v";
+} else if ($age_year <= '16') {
+    $sstosai = "tbl_sstosai_16v";
+}
+
+// sai_v lookup
+$sai_v = DB::table($sstosai)
+    ->where($sstosai_m, $verbalscaledScore->scaled_score_v)
+    ->first();
+
+if ($sai_v && isset($sai_v->$sstosai_sai)) {
+    $saiVerbalValue = $sai_v->$sstosai_sai;
+} else {
+    $saiVerbalValue = $verbalscaledScore->raw_score_v > 700 ? 150 : 50;
+}
+
+// pbg_v lookup
+$pbg_v = DB::table('tbl_pbg_prnsv')
+    ->where('scaled_score', $verbalscaledScore->scaled_score_v)
+    ->first();
+
+      if ($pbg_v) {
+
+            if ($pbg_v->stanines == null && $pbg_v->percentile_ranks == null) {
+                if ( $verbalscaledScore->scaled_score_v > 700) {
+                    $pbg_v->percentile_ranks = 99;
+                    $pbg_v->stanines = 9;
+                } else if ( $verbalscaledScore->scaled_score_v < 700) {
+                    $pbg_v->percentile_ranks = 1;
+                    $pbg_v->stanines = 1;
+                }
+            }
+        } else {
+
+            $pbg_v = (object)[
+                'percentile_ranks' => $verbalscaledScore->scaled_score_v > 700 ? 99 : 1,
+                'stanines'         =>  $verbalscaledScore->scaled_score_v > 700 ? 9  : 1,
+            ];
+        }
+
+
+// pba_v lookup
+$pba_v = DB::table('tbl_pba_prns')
+    ->where('sai', $sai_v->$sstosai_sai ?? null)
+    ->first();
+
+    if ($pba_v) {
+            // row found → check if fields are null
+            if ($pba_v->stanines == null && $pba_v->percentile_ranks == null) {
+                if ($sai->$sstosai_sai > 700) {
+                    $pba_v->percentile_ranks = 99;
+                    $pba_v->stanines = 9;
+                } else if ($sai->$sstosai_sai < 700) {
+                    $pba_v->percentile_ranks = 1;
+                    $pba_v->stanines = 1;
+                }
+            }
+        } else {
+            // no row found → create default object
+            $pba_v = (object)[
+                'percentile_ranks' => $sai->$sstosai_sai > 700 ? 99 : 1,
+                'stanines'         => $sai->$sstosai_sai > 700 ? 9  : 1,
+            ];
+        }
+
+
+
 
 
     //NonVerbal Scaled Score
@@ -297,18 +386,39 @@ class ResultController extends Controller
             if ($sai_nv && isset($sai_nv->$sstosai_sai)) {
                 $sainonVerbalValue = $sai_nv->$sstosai_sai;
             } else {
-                $sainonVerbalValue = $nonverbalscaledScore->raw_score_nv > 700 ? '150' : '50';
+                $sainonVerbalValue = $nonverbalscaledScore->raw_score_nv > 700 ? 150 : 50;
             }
 
 
 
-              $pbg_v = DB::table('tbl_pbg_prnsnv')
+              $pbg_nv = DB::table('tbl_pbg_prnsnv')
             ->where('scaled_score', $nonverbalscaledScore->scaled_score_nv)
             ->first();
 
-                    $pba_v = DB::table('tbl_pba_prns')
-                ->where('sai', $sai_v->$sstosai_sai)
+
+             if ($pbg_nv) {
+
+            if ($pbg_nv->stanines == null && $pbg_nv->percentile_ranks == null) {
+                if ($nonverbalscaledScore->scaled_score_nv > 700) {
+                    $pbg_nv->percentile_ranks = 99;
+                    $pbg_nv->stanines = 9;
+                } else if ($nonverbalscaledScore->scaled_score_nv < 700) {
+                    $pbg_nv->percentile_ranks = 1;
+                    $pbg_nv->stanines = 1;
+                }
+            }
+        } else {
+
+            $pbg_nv = (object)[
+                'percentile_ranks' => $nonverbalscaledScore->scaled_score_nv > 700 ? 99 : 1,
+                'stanines'         => $nonverbalscaledScore->scaled_score_nv > 700 ? 9  : 1,
+            ];
+        }
+
+                    $pba_nv = DB::table('tbl_pba_prns')
+                ->where('sai', $sai_nv->$sstosai_sai)
                 ->first();
+
 
 
 
@@ -323,28 +433,28 @@ class ResultController extends Controller
 
         'total_score' => $totalScore,
         'scaled_score_t'=> $scaledScore->scaled_score_t,
-        'sai_t' => 50,
-        'pba_pr_t' => 50,
-        'pba_s_t' => 50,
-        'pbg_pr_t' => 50,
-        'pbg_s_t' => 50,
+        'sai_t' => $sai->$sstosai_sai,
+        'pba_pr_t' =>  $pba->percentile_ranks ,
+        'pba_s_t' => $pba->stanines,
+        'pbg_pr_t' => $pbg->percentile_ranks,
+        'pbg_s_t' => $pbg->stanines,
 
 
         'verbal' => $verbalScore,
         'scaled_score_v'=> $verbalscaledScore->scaled_score_v,
-        'sai_v' => 10,
-        'pba_pr_v'=> 10,
-        'pba_s_v' => 10,
-        'pbg_pr_v'=> 10,
-        'pbg_s_v'=> 10,
+        'sai_v' => $verbalscaledScore->scaled_score_v,
+        'pba_pr_v'=> $pba_v->percentile_ranks,
+        'pba_s_v' => $pba_v->stanines,
+        'pbg_pr_v'=> $pbg_v->percentile_ranks ,
+        'pbg_s_v'=> $pbg_v->stanines,
 
         'non_verbal' => $nonVerbalScore,
         'scaled_score_nv' => $nonverbalscaledScore->scaled_score_nv,
-        'sai_nv' => 20,
-        'pba_pr_nv'=> 20,
-        'pba_s_nv' => 20,
-        'pbg_pr_nv' => 20,
-        'pbg_s_nv'=> 20,
+        'sai_nv' =>  $nonverbalscaledScore->scaled_score_nv,
+        'pba_pr_nv'=> $pba_nv->percentile_ranks,
+        'pba_s_nv' => $pba_nv->stanines,
+        'pbg_pr_nv' => $pbg_nv->percentile_ranks,
+        'pbg_s_nv'=> $pbg_nv->stanines,
 
         'verbal_comprehension' => $verbalComprehensionScore,
         'verbal_comprehension_category' => $verbalComprehensionCategory,

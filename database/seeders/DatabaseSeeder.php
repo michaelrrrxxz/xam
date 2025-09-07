@@ -19,8 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TrialExamSeeder::class);
         $this->call(SchoolSeeder::class);
         $this->call(RandomSeeder::class);
-
-        $this->call(QuestionsSeeder::class);
+        $this->call(QuestionSeeder::class);
 
         //results calculation
         $this->call([

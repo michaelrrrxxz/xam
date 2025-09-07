@@ -457,33 +457,9 @@ const filteredQuestion = computed(() => {
             </template>
             <template v-else>
               <TableRow v-for="q in filteredQuestion" :key="q.id">
-                <TableCell class="max-w-xs">
-                  <!-- show image thumbnail when image, else text -->
+             <TableCell class="max-w-xs truncate" v-html="q.question"></TableCell>
 
-                  <!-- If it's an image -->
-                  <div v-if="isUploadable(q.question) || isLikelyImageString(q.question)">
-                    <img
-                      v-if="
-                        isUploadable(q.question) ||
-                        (typeof q.question === 'string' && q.question !== '')
-                      "
-                      :src="
-                        isUploadable(q.question)
-                          ? q.question.preview
-                          : q.question.startsWith('http')
-                            ? q.question
-                            : `/storage/${q.question}`
-                      "
-                      class="max-h-16 rounded"
-                      alt="question"
-                    />
-                  </div>
 
-                  <!-- If it's plain text -->
-                  <div v-else>
-                    {{ q.question }}
-                  </div>
-                </TableCell>
                 <TableCell>{{
                   (q.test_type || '').charAt(0).toUpperCase() + (q.test_type || '').slice(1)
                 }}</TableCell>

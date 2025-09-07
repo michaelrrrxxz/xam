@@ -1,0 +1,1169 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+class QuestionSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        DB::table('questions')->insert([
+
+    // Q1
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'First is to original as only is to ---',
+        'answer' => 'ch1',
+        'ch1' => 'unique',
+        'ch2' => 'special',
+        'ch3' => 'expensive',
+        'ch4' => 'many',
+        'ch5' => 'last',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q2
+    [
+        'format' => 'image',
+        'test_type' => 'verbal',
+        'question' => '<img src="storage/questions/6_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/6_c.jpg">',
+        'ch2' => '<img src="storage/questions/6_a.jpg">',
+        'ch3' => '<img src="storage/questions/6_b.jpg">',
+        'ch4' => '<img src="storage/questions/6_d.jpg">',
+        'ch5' => '<img src="storage/questions/6_e.jpg">',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q3
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/7_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/7_e.jpg">',
+        'ch2' => '<img src="storage/questions/7_a.jpg">',
+        'ch3' => '<img src="storage/questions/7_b.jpg">',
+        'ch4' => '<img src="storage/questions/7_c.jpg">',
+        'ch5' => '<img src="storage/questions/7_d.jpg">',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q4
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/8_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/8_c.jpg">',
+        'ch2' => '<img src="storage/questions/8_a.jpg">',
+        'ch3' => '<img src="storage/questions/8_b.jpg">',
+        'ch4' => '<img src="storage/questions/8_d.jpg">',
+        'ch5' => '<img src="storage/questions/8_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q5
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What number comes next in this series?   1    6    10    13    15    ?',
+        'answer' => 'ch1',
+        'ch1' => '16',
+        'ch2' => '14',
+        'ch3' => '17',
+        'ch4' => '18',
+        'ch5' => '19',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q6
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>confinement</b> is ----',
+        'answer' => 'ch1',
+        'ch1' => 'freedom',
+        'ch2' => 'recognition',
+        'ch3' => 'satisfaction',
+        'ch4' => 'cooperation',
+        'ch5' => 'dedication',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q7
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word does <i>not</i> go with the other four?',
+        'answer' => 'ch1',
+        'ch1' => 'polite',
+        'ch2' => 'honest',
+        'ch3' => 'truthful',
+        'ch4' => 'open',
+        'ch5' => 'frank',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q8
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/12_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/12_d.jpg">',
+        'ch2' => '<img src="storage/questions/12_a.jpg">',
+        'ch3' => '<img src="storage/questions/12_b.jpg">',
+        'ch4' => '<img src="storage/questions/12_c.jpg">',
+        'ch5' => '<img src="storage/questions/12_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q9
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'There are five houses in a row. One house is green. Two yellow houses are next to each other. The end house is red. The middle house is blue. What colors are the houses that are farthest apart?',
+        'answer' => 'ch1',
+        'ch1' => 'Red and yellow',
+        'ch2' => 'Red and blue',
+        'ch3' => 'Yellow and blue',
+        'ch4' => 'Green and yellow',
+        'ch5' => 'Blue and green',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q10
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'An enclosure always has ---',
+        'answer' => 'ch1',
+        'ch1' => 'sides',
+        'ch2' => 'an entrance',
+        'ch3' => 'ventilation',
+        'ch4' => 'a roof',
+        'ch5' => 'windows',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q11
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Choose the word that <i>best</i> completes this sentence: <br> Faulty reasoning generally results in _________ conclusions.',
+        'answer' => 'ch1',
+        'ch1' => 'erroneous',
+        'ch2' => 'intelligent',
+        'ch3' => 'valid',
+        'ch4' => 'eccentric',
+        'ch5' => 'offensive',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q12
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/16_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/16_d.jpg">',
+        'ch2' => '<img src="storage/questions/16_a.jpg">',
+        'ch3' => '<img src="storage/questions/16_b.jpg">',
+        'ch4' => '<img src="storage/questions/16_c.jpg">',
+        'ch5' => '<img src="storage/questions/16_e.jpg">',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q13
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/17_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/17_c.jpg">',
+        'ch2' => '<img src="storage/questions/17_a.jpg">',
+        'ch3' => '<img src="storage/questions/17_b.jpg">',
+        'ch4' => '<img src="storage/questions/17_d.jpg">',
+        'ch5' => '<img src="storage/questions/17_e.jpg">',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q14
+    [
+        'format' => 'image',
+        'test_type' => 'verbal',
+        'question' => '<img src="storage/questions/18_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/18_b.jpg">',
+        'ch2' => '<img src="storage/questions/18_a.jpg">',
+        'ch3' => '<img src="storage/questions/18_c.jpg">',
+        'ch4' => '<img src="storage/questions/18_d.jpg">',
+        'ch5' => '<img src="storage/questions/18_e.jpg">',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q15
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/19_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/19_c.jpg">',
+        'ch2' => '<img src="storage/questions/19_a.jpg">',
+        'ch3' => '<img src="storage/questions/19_b.jpg">',
+        'ch4' => '<img src="storage/questions/19_d.jpg">',
+        'ch5' => '<img src="storage/questions/19_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q16
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => '<b>Increase</b> is to <b>reveal</b> as <b>decrease</b> is to ----',
+        'answer' => 'ch1',
+        'ch1' => 'conceal',
+        'ch2' => 'reduce',
+        'ch3' => 'concede',
+        'ch4' => 'refuse',
+        'ch5' => 'disclose',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q17
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Robert buys 14 cans of dog food every week for his dogs, who each eat one can a day. If Robert has twice as many cats as dogs, how many cats does he have?',
+        'answer' => 'ch1',
+        'ch1' => '4',
+        'ch2' => '2',
+        'ch3' => '6',
+        'ch4' => '7',
+        'ch5' => '8',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q18
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/22_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/22_b.jpg">',
+        'ch2' => '<img src="storage/questions/22_a.jpg">',
+        'ch3' => '<img src="storage/questions/22_c.jpg">',
+        'ch4' => '<img src="storage/questions/22_d.jpg">',
+        'ch5' => '<img src="storage/questions/22_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q19
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What comes next in this series?    10C    8A    12E    10C    14G?',
+        'answer' => 'ch1',
+        'ch1' => '12E',
+        'ch2' => '12G',
+        'ch3' => '14E',
+        'ch4' => '16I',
+        'ch5' => '18K',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q20
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Paul was born in 1970. Dick was born in 1972. If John is younger than Dick, then we know that ---',
+        'answer' => 'ch1',
+        'ch1' => 'Dick is younger than Paul and older than John',
+        'ch2' => 'Paul is older than Dick and younger than John',
+        'ch3' => 'Paul is younger than Dick and older than John',
+        'ch4' => 'Paul is younger than Dick and John',
+        'ch5' => 'Dick is older than Paul and younger than John',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+    // Q21
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Choose the pair of words that are related in the same way as: <b>Painting : Artist</b>',
+        'answer' => 'ch1',
+        'ch1' => 'Symphony : Composer',
+        'ch2' => 'Book : Reader',
+        'ch3' => 'Medicine : Doctor',
+        'ch4' => 'Law : Judge',
+        'ch5' => 'Novel : Publisher',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q22
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/23_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/23_c.jpg">',
+        'ch2' => '<img src="storage/questions/23_a.jpg">',
+        'ch3' => '<img src="storage/questions/23_b.jpg">',
+        'ch4' => '<img src="storage/questions/23_d.jpg">',
+        'ch5' => '<img src="storage/questions/23_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q23
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What is the next number?   2   4   8   16   ?',
+        'answer' => 'ch1',
+        'ch1' => '32',
+        'ch2' => '24',
+        'ch3' => '20',
+        'ch4' => '30',
+        'ch5' => '28',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q24
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>generous</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'stingy',
+        'ch2' => 'brave',
+        'ch3' => 'selfish',
+        'ch4' => 'bold',
+        'ch5' => 'kind',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q25
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which one does <i>not</i> belong?   Apple, Banana, Carrot, Grape, Orange',
+        'answer' => 'ch1',
+        'ch1' => 'Carrot',
+        'ch2' => 'Banana',
+        'ch3' => 'Grape',
+        'ch4' => 'Apple',
+        'ch5' => 'Orange',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q26
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/26_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/26_b.jpg">',
+        'ch2' => '<img src="storage/questions/26_a.jpg">',
+        'ch3' => '<img src="storage/questions/26_c.jpg">',
+        'ch4' => '<img src="storage/questions/26_d.jpg">',
+        'ch5' => '<img src="storage/questions/26_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q27
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'Find the missing number:   5, 10, 20, 40, ?',
+        'answer' => 'ch1',
+        'ch1' => '80',
+        'ch2' => '70',
+        'ch3' => '60',
+        'ch4' => '90',
+        'ch5' => '75',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q28
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => '<b>Possible</b> is to <b>maybe</b> as <b>probable</b> is to ---',
+        'answer' => 'ch1',
+        'ch1' => 'likely',
+        'ch2' => 'gradually',
+        'ch3' => 'hopefully',
+        'ch4' => 'certainly',
+        'ch5' => 'eventually',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q29
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/29_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/29_d.jpg">',
+        'ch2' => '<img src="storage/questions/29_a.jpg">',
+        'ch3' => '<img src="storage/questions/29_b.jpg">',
+        'ch4' => '<img src="storage/questions/29_c.jpg">',
+        'ch5' => '<img src="storage/questions/29_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q30
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What comes next?  3, 6, 12, 24, ?',
+        'answer' => 'ch1',
+        'ch1' => '48',
+        'ch2' => '36',
+        'ch3' => '30',
+        'ch4' => '42',
+        'ch5' => '60',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q31
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/31_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/31_d.jpg">',
+        'ch2' => '<img src="storage/questions/31_a.jpg">',
+        'ch3' => '<img src="storage/questions/31_b.jpg">',
+        'ch4' => '<img src="storage/questions/31_c.jpg">',
+        'ch5' => '<img src="storage/questions/31_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q32
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word is most opposite in meaning to <b>scarce</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'plentiful',
+        'ch2' => 'rare',
+        'ch3' => 'expensive',
+        'ch4' => 'valuable',
+        'ch5' => 'limited',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q33
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Choose the pair of words related in the same way as: <b>Wheel : Car</b>',
+        'answer' => 'ch1',
+        'ch1' => 'Key : Lock',
+        'ch2' => 'Chair : Table',
+        'ch3' => 'Book : Author',
+        'ch4' => 'Song : Singer',
+        'ch5' => 'Roof : House',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q34
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/34_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/34_b.jpg">',
+        'ch2' => '<img src="storage/questions/34_a.jpg">',
+        'ch3' => '<img src="storage/questions/34_c.jpg">',
+        'ch4' => '<img src="storage/questions/34_d.jpg">',
+        'ch5' => '<img src="storage/questions/34_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q35
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What comes next?   2, 4, 6, 8, ?',
+        'answer' => 'ch1',
+        'ch1' => '10',
+        'ch2' => '12',
+        'ch3' => '14',
+        'ch4' => '16',
+        'ch5' => '18',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q36
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>expand</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'contract',
+        'ch2' => 'increase',
+        'ch3' => 'extend',
+        'ch4' => 'prolong',
+        'ch5' => 'develop',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q37
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word does <i>not</i> belong?   Dog, Cat, Cow, Sheep, Chair',
+        'answer' => 'ch1',
+        'ch1' => 'Chair',
+        'ch2' => 'Dog',
+        'ch3' => 'Cat',
+        'ch4' => 'Cow',
+        'ch5' => 'Sheep',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q38
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/38_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/38_e.jpg">',
+        'ch2' => '<img src="storage/questions/38_a.jpg">',
+        'ch3' => '<img src="storage/questions/38_b.jpg">',
+        'ch4' => '<img src="storage/questions/38_c.jpg">',
+        'ch5' => '<img src="storage/questions/38_d.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q39
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'Find the next number:  11, 22, 33, 44, ?',
+        'answer' => 'ch1',
+        'ch1' => '55',
+        'ch2' => '66',
+        'ch3' => '77',
+        'ch4' => '88',
+        'ch5' => '99',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q40
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word is most similar to <b>rapid</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'fast',
+        'ch2' => 'slow',
+        'ch3' => 'calm',
+        'ch4' => 'gentle',
+        'ch5' => 'steady',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q41
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word is most opposite in meaning to <b>honest</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'dishonest',
+        'ch2' => 'true',
+        'ch3' => 'faithful',
+        'ch4' => 'genuine',
+        'ch5' => 'real',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q42
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/42_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/42_c.jpg">',
+        'ch2' => '<img src="storage/questions/42_a.jpg">',
+        'ch3' => '<img src="storage/questions/42_b.jpg">',
+        'ch4' => '<img src="storage/questions/42_d.jpg">',
+        'ch5' => '<img src="storage/questions/42_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q43
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'Find the next number:  7, 14, 21, 28, ?',
+        'answer' => 'ch1',
+        'ch1' => '35',
+        'ch2' => '36',
+        'ch3' => '42',
+        'ch4' => '40',
+        'ch5' => '38',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q44
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word does <i>not</i> go with the others?   Table, Chair, Sofa, Bed, Dog',
+        'answer' => 'ch1',
+        'ch1' => 'Dog',
+        'ch2' => 'Table',
+        'ch3' => 'Chair',
+        'ch4' => 'Sofa',
+        'ch5' => 'Bed',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q45
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => '<b>Teacher</b> is to <b>school</b> as <b>doctor</b> is to ---',
+        'answer' => 'ch1',
+        'ch1' => 'hospital',
+        'ch2' => 'medicine',
+        'ch3' => 'patient',
+        'ch4' => 'nurse',
+        'ch5' => 'clinic',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q46
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/46_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/46_e.jpg">',
+        'ch2' => '<img src="storage/questions/46_a.jpg">',
+        'ch3' => '<img src="storage/questions/46_b.jpg">',
+        'ch4' => '<img src="storage/questions/46_c.jpg">',
+        'ch5' => '<img src="storage/questions/46_d.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q47
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What comes next?  4, 9, 16, 25, ?',
+        'answer' => 'ch1',
+        'ch1' => '36',
+        'ch2' => '30',
+        'ch3' => '35',
+        'ch4' => '40',
+        'ch5' => '45',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q48
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>victory</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'defeat',
+        'ch2' => 'success',
+        'ch3' => 'win',
+        'ch4' => 'gain',
+        'ch5' => 'profit',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q49
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word is most similar to <b>ancient</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'old',
+        'ch2' => 'young',
+        'ch3' => 'modern',
+        'ch4' => 'fresh',
+        'ch5' => 'new',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q50
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/50_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/50_b.jpg">',
+        'ch2' => '<img src="storage/questions/50_a.jpg">',
+        'ch3' => '<img src="storage/questions/50_c.jpg">',
+        'ch4' => '<img src="storage/questions/50_d.jpg">',
+        'ch5' => '<img src="storage/questions/50_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q51
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/51_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/51_b.jpg">',
+        'ch2' => '<img src="storage/questions/51_a.jpg">',
+        'ch3' => '<img src="storage/questions/51_c.jpg">',
+        'ch4' => '<img src="storage/questions/51_d.jpg">',
+        'ch5' => '<img src="storage/questions/51_e.jpg">',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q52
+    [
+        'format' => 'image',
+        'test_type' => 'verbal',
+        'question' => '<img src="storage/questions/52_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/52_c.jpg">',
+        'ch2' => '<img src="storage/questions/52_a.jpg">',
+        'ch3' => '<img src="storage/questions/52_b.jpg">',
+        'ch4' => '<img src="storage/questions/52_d.jpg">',
+        'ch5' => '<img src="storage/questions/52_e.jpg">',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q53
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'There can be no message if there is no ----',
+        'answer' => 'ch1',
+        'ch1' => 'thought',
+        'ch2' => 'word',
+        'ch3' => 'note',
+        'ch4' => 'messenger',
+        'ch5' => 'pencil',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q54
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/54_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/54_a.jpg">',
+        'ch2' => '<img src="storage/questions/54_b.jpg">',
+        'ch3' => '<img src="storage/questions/54_c.jpg">',
+        'ch4' => '<img src="storage/questions/54_d.jpg">',
+        'ch5' => '<img src="storage/questions/54_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q55
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Choose the words that <i>best</i> complete this sentence: <br> The evidence against him was ________ so the charges were ________',
+        'answer' => 'ch1',
+        'ch1' => 'unsupported ---- dismissed',
+        'ch2' => 'convincing ---- dropped',
+        'ch3' => 'feeble ---- extended',
+        'ch4' => 'overwhelming ---- reduced',
+        'ch5' => 'damaging ---- withdrawn',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q56
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/56_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/56_b.jpg">',
+        'ch2' => '<img src="storage/questions/56_a.jpg">',
+        'ch3' => '<img src="storage/questions/56_c.jpg">',
+        'ch4' => '<img src="storage/questions/56_d.jpg">',
+        'ch5' => '<img src="storage/questions/56_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q57
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>scarcity</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'abundance',
+        'ch2' => 'necessity',
+        'ch3' => 'bonus',
+        'ch4' => 'privilege',
+        'ch5' => 'expansion',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q58
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'In a foreign language <b>tana dona meka</b> means <b>very cold water</b>, <b>tana neta</b> means <b>hot water</b>, and <b>dona bela</b> means <b>very good</b>. Which word means <b>cold</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'meka',
+        'ch2' => 'dona',
+        'ch3' => 'neta',
+        'ch4' => 'tana',
+        'ch5' => 'bela',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q59
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/59_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/59_d.jpg">',
+        'ch2' => '<img src="storage/questions/59_a.jpg">',
+        'ch3' => '<img src="storage/questions/59_b.jpg">',
+        'ch4' => '<img src="storage/questions/59_c.jpg">',
+        'ch5' => '<img src="storage/questions/59_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q60
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What number comes next in this series?   5    11    16    20    23    ?',
+        'answer' => 'ch1',
+        'ch1' => '25',
+        'ch2' => '24',
+        'ch3' => '27',
+        'ch4' => '28',
+        'ch5' => '29',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+    // Q61
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>expand</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'contract',
+        'ch2' => 'grow',
+        'ch3' => 'increase',
+        'ch4' => 'develop',
+        'ch5' => 'stretch',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q62
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/62_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/62_c.jpg">',
+        'ch2' => '<img src="storage/questions/62_a.jpg">',
+        'ch3' => '<img src="storage/questions/62_b.jpg">',
+        'ch4' => '<img src="storage/questions/62_d.jpg">',
+        'ch5' => '<img src="storage/questions/62_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q63
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'Find the missing number:  2, 4, 8, 16, ?',
+        'answer' => 'ch1',
+        'ch1' => '32',
+        'ch2' => '24',
+        'ch3' => '20',
+        'ch4' => '18',
+        'ch5' => '36',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q64
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => '<b>Bird</b> is to <b>fly</b> as <b>fish</b> is to ---',
+        'answer' => 'ch1',
+        'ch1' => 'swim',
+        'ch2' => 'dive',
+        'ch3' => 'crawl',
+        'ch4' => 'float',
+        'ch5' => 'sink',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q65
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/65_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/65_e.jpg">',
+        'ch2' => '<img src="storage/questions/65_a.jpg">',
+        'ch3' => '<img src="storage/questions/65_b.jpg">',
+        'ch4' => '<img src="storage/questions/65_c.jpg">',
+        'ch5' => '<img src="storage/questions/65_d.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q66
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word is closest in meaning to <b>rapid</b>?',
+        'answer' => 'ch1',
+        'ch1' => 'fast',
+        'ch2' => 'slow',
+        'ch3' => 'lazy',
+        'ch4' => 'steady',
+        'ch5' => 'weak',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q67
+    [
+        'format' => 'text',
+        'test_type' => 'non-verbal',
+        'question' => 'What comes next?  1, 4, 9, 16, 25, ?',
+        'answer' => 'ch1',
+        'ch1' => '36',
+        'ch2' => '30',
+        'ch3' => '28',
+        'ch4' => '32',
+        'ch5' => '40',
+        'qtype' => 'Quantitative Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q68
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/68_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/68_a.jpg">',
+        'ch2' => '<img src="storage/questions/68_b.jpg">',
+        'ch3' => '<img src="storage/questions/68_c.jpg">',
+        'ch4' => '<img src="storage/questions/68_d.jpg">',
+        'ch5' => '<img src="storage/questions/68_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q69
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'The opposite of <b>accept</b> is ---',
+        'answer' => 'ch1',
+        'ch1' => 'reject',
+        'ch2' => 'receive',
+        'ch3' => 'obtain',
+        'ch4' => 'welcome',
+        'ch5' => 'take',
+        'qtype' => 'Verbal Comprehension',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q70
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/70_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/70_d.jpg">',
+        'ch2' => '<img src="storage/questions/70_a.jpg">',
+        'ch3' => '<img src="storage/questions/70_b.jpg">',
+        'ch4' => '<img src="storage/questions/70_c.jpg">',
+        'ch5' => '<img src="storage/questions/70_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q71
+    [
+        'format' => 'text',
+        'test_type' => 'verbal',
+        'question' => 'Which word best fits:  <b>generous</b> is to <b>giving</b> as <b>stingy</b> is to ---',
+        'answer' => 'ch1',
+        'ch1' => 'withholding',
+        'ch2' => 'sharing',
+        'ch3' => 'open',
+        'ch4' => 'friendly',
+        'ch5' => 'kind',
+        'qtype' => 'Verbal Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+    // Q72
+    [
+        'format' => 'image',
+        'test_type' => 'non-verbal',
+        'question' => '<img src="storage/questions/72_q.jpg">',
+        'answer' => 'ch1',
+        'ch1' => '<img src="storage/questions/72_b.jpg">',
+        'ch2' => '<img src="storage/questions/72_a.jpg">',
+        'ch3' => '<img src="storage/questions/72_c.jpg">',
+        'ch4' => '<img src="storage/questions/72_d.jpg">',
+        'ch5' => '<img src="storage/questions/72_e.jpg">',
+        'qtype' => 'Figural Reasoning',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+
+]);
+    }
+}
