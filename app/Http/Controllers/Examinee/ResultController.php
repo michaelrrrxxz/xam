@@ -58,21 +58,21 @@ class ResultController extends Controller
         });
 
 
-        // $totalScore = $studentAnswers->where('is_correct', true)->count();
-        $totalScore = 12;
+        $totalScore = $studentAnswers->where('is_correct', true)->count();
+        // $totalScore = 12;
 
 
-        // $verbalScore = $studentAnswers->filter(fn($a) =>
-        //     strtolower($a->question->test_type) === 'verbal' && $a->is_correct
-        // )->count();
+        $verbalScore = $studentAnswers->filter(fn($a) =>
+            strtolower($a->question->test_type) === 'verbal' && $a->is_correct
+        )->count();
 
-        $verbalScore = 7;
+        // $verbalScore = 7;
 
-        // $nonVerbalScore = $studentAnswers->filter(fn($a) =>
-        //     strtolower($a->question->test_type) === 'non-verbal' && $a->is_correct
-        // )->count();
+        $nonVerbalScore = $studentAnswers->filter(fn($a) =>
+            strtolower($a->question->test_type) === 'non-verbal' && $a->is_correct
+        )->count();
 
-        $nonVerbalScore = 5;
+        // $nonVerbalScore = 5;
 
 
 

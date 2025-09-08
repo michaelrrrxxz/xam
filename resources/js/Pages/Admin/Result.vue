@@ -36,6 +36,7 @@
               <TableHead colspan="2" title="Performance By Grade">PBG</TableHead>
               <TableHead colspan="5">Verbal</TableHead>
               <TableHead colspan="5">Non-Verbal</TableHead>
+                <TableHead rowspan="3" class="align-middle"></TableHead>
             </TableRow>
             <TableRow>
               <TableHead rowspan="2" class="align-middle" title="Percentile Rank">PR</TableHead>
@@ -84,6 +85,7 @@
                 <TableCell><Skeleton class="h-4 w-6 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-6 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-6 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-12 rounded" /></TableCell>
               </TableRow>
             </template>
 
@@ -111,6 +113,10 @@
                 <TableCell>{{ r.figural_reasoning }}</TableCell>
                 <TableCell>{{ r.figural_reasoning_category }}</TableCell>
                 <TableCell>{{ r.non_verbal }}</TableCell>
+                <TableCell> <Button @click="print(r.id)"class="flex items-center gap-2">
+    <Printer class="w-4 h-4" />
+    Print
+  </Button></TableCell>
               </TableRow>
 
               <!-- No Data -->
@@ -141,7 +147,7 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Plus } from 'lucide-vue-next';
+import { Plus, Printer } from 'lucide-vue-next';
 
 /* ---------------------- Types ---------------------- */
 interface Student {
@@ -205,6 +211,11 @@ const fetchResult = async () => {
     isLoading.value = false;
   }
 };
+
+const print = async (id: number) => {
+  window.open(`/results/${id}/print`, '_blank');
+};
+
 
 /* ---------------------- Computed ---------------------- */
 const filteredResults = computed(() => {

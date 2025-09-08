@@ -14,4 +14,28 @@ class ResultController extends Controller
 
         return response()->json($results);
     }
+
+    public function print($id)
+    {
+        $result = Result::with(['batch', 'student'])->findOrFail($id);
+
+        // Load a Blade view for printing
+        return view('results.print', compact('result'));
+    }
+
+  
+    public function resultsByBatch($batchId)
+    {
+        $results = Result::with([
+                'batch:id,name',
+                'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'
+            ])
+            ->where('batch_id', $batchId)
+            ->get();
+
+        return response()->json($results);
+    }
+
+
+
 }
