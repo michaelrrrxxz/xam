@@ -7,6 +7,7 @@ import Landing from '@/Pages/Auth/LandingPage.vue';
 
 import EnrolledStudent from '@/Pages/Admin/EnrolledStudent.vue';
 import Batch from '@/Pages/Admin/Batch.vue';
+import ResultsByBatch from '@/Pages/Admin/ResultsbyBatch.vue';
 import Questions from '@/Pages/Admin/Questions.vue';
 import Dashboard from '@/Pages/Admin/Dashboard.vue';
 import AdminResult from '@/Pages/Admin/Result.vue';
@@ -100,6 +101,15 @@ const routes: RouteRecordRaw[] = [
     meta: { title: `Batch: ${appName}`, requiresAuth: true },
     props: true,
   },
+
+  {
+  path: '/batch/:id/results',
+  name: 'ResultsByBatch',
+  component: ResultsByBatch,
+  meta: { title: `Batch Results - ${appName}`, requiresAuth: true },
+  props: true,
+},
+
   {
     path: '/admin/results',
     name: 'Result',

@@ -18,6 +18,10 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
+
+const isActive = (url: string) => {
+  return route.path === url || route.path.startsWith(url + '/');
+};
 </script>
 
 <template>
@@ -29,8 +33,8 @@ const route = useRoute();
           <SidebarMenuButton
             :tooltip="item.title"
             :class="{
-              'bg-gray-200 text-black': route.path === item.url,
-              'hover:bg-gray-100': route.path !== item.url,
+              'bg-gray-200 text-black': isActive(item.url),
+              'hover:bg-gray-100': !isActive(item.url),
             }"
           >
             <component :is="item.icon" v-if="item.icon" class="mr-2" />
