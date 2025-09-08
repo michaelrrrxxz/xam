@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Batch;
+use App\Models\Result;
 use App\Http\Requests\StoreBatchRequest;
 use App\Http\Requests\UpdateBatchRequest;
 
@@ -131,6 +132,19 @@ class BatchController extends Controller
             'message' => 'Batch activated successfully',
             'batch' => $batch
         ]);
+    }
+
+
+    public function print($batchId)
+    {
+        $results = Result::with([
+                'batch:id,name',
+                'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'
+            ])
+            ->where('batch_id', $batchId)
+            ->get();
+
+        return view('results.batchprint', compact('results'));
     }
 
 
