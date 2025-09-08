@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::apiResource('result', AdminResultController::class)->only(['index']);
+        Route::get('/results/batch/{id}', [AdminResultController::class, 'resultsByBatch']);
         Route::apiResource('dashboard', DashboardController::class)->only(['index']);
         Route::apiResource('exam', ExamController::class);
         Route::apiResource('batch', BatchController::class);
@@ -50,6 +51,8 @@ Route::prefix('v1')->group(function () {
     });
 
     // 🔓 Public routes
+
+
 
 
 
