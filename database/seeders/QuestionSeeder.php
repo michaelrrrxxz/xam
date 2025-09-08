@@ -45,7 +45,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 3,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/3_q.jpg>',
                 'answer'    => 'ch4',
@@ -61,7 +61,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 4,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/4_q.jpg>',
                 'answer'    => 'ch3',
@@ -77,7 +77,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 5,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => '<b>First</b> is to original as <b>only</b> is to ---',
                 'answer'    => 'ch2',
@@ -93,7 +93,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 6,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/6_q.jpg>',
                 'answer'    => 'ch3',
@@ -109,7 +109,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 7,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/7_q.jpg>',
                 'answer'    => 'ch5',
@@ -125,7 +125,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 8,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/8_q.jpg>',
                 'answer'    => 'ch3',
@@ -141,7 +141,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 9,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'non-verbal',
                 'question'  => 'What number comes next in this series?   1    6    10    13    15    ?',
                 'answer'    => 'ch2',
@@ -157,7 +157,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 10,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'The opposite of <b>confinement</b> is ----',
                 'answer'    => 'ch5',
@@ -173,7 +173,7 @@ class QuestionSeeder extends Seeder
 
                 [
                 'id'        => 11,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'Which word does <i>not</i> go with the other four?',
                 'answer'    => 'ch2',
@@ -189,7 +189,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 12,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/12_q.jpg>',
                 'answer'    => 'ch4',
@@ -205,7 +205,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 13,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'There are five houses in a row. One house is gree. Two yellow houses are next to each other. The end house is red. The middle house is blue. What colors are the houses that are farthest apart?',
                 'answer'    => 'ch1',
@@ -221,7 +221,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 14,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'An enclosure always has ---',
                 'answer'    => 'ch3',
@@ -237,7 +237,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 15,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'Choose the word that <i>best</i> completes this sentence: <br> Faulty reasoning generally results in _________ conclusions.',
                 'answer'    => 'ch4',
@@ -253,7 +253,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 16,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/16_q.jpg>',
                 'answer'    => 'ch4',
@@ -269,7 +269,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 17,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/17_q.jpg>',
                 'answer'    => 'ch3',
@@ -285,7 +285,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 18,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/18_q.jpg>',
                 'answer'    => 'ch2',
@@ -301,7 +301,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 19,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/19_q.jpg>',
                 'answer'    => 'ch3',
@@ -317,7 +317,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 20,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => '<b>Increase</b> is to <b>reveal</b> as <b>decrease</b> is to ----',
                 'answer'    => 'ch4',
@@ -332,7 +332,7 @@ class QuestionSeeder extends Seeder
             ],
             [
                 'id'        => 21,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'Robert buys 14 cans of dog food every week for his dogs, who each eat one can a day. If Robert has twice as many cats as dogs, how many cats does he have?',
                 'answer'    => 'ch2',
@@ -348,7 +348,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 22,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/22_q.jpg>',
                 'answer'    => 'ch2',
@@ -364,7 +364,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 23,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'non-verbal',
                 'question'  => 'What comes next in this series?    10C    8A    12E    10C    14G?',
                 'answer'    => 'ch1',
@@ -380,7 +380,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 24,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'Paul was born in 1970. Dick was born in 1972. If John is younger than Dick, then we know that ---',
                 'answer'    => 'ch1',
@@ -396,7 +396,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 25,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'Whice word goes <i>most clearly</i> with: <b>peaceful    serene    tranquil</b>?',
                 'answer'    => 'ch5',
@@ -412,7 +412,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 26,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/26_q.jpg>',
                 'answer'    => 'ch3',
@@ -428,7 +428,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 27,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/27_q.jpg>',
                 'answer'    => 'ch3',
@@ -444,7 +444,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 28,
-                'format'    => '1',
+                'format'    => 'text',
                 'test_type' => 'Verbal',
                 'question'  => 'The opposite of <b>discord</b> is ---',
                 'answer'    => 'ch1',
@@ -460,7 +460,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 29,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/29_q.jpg>',
                 'answer'    => 'ch5',
@@ -476,7 +476,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 30,
-                'format'    => '3',
+                'format'    > 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/30_q.jpg>',
                 'answer'    => 'ch3',
@@ -523,7 +523,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 33,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => '<b>Possible</b> is to <b>maybe</b> as <b>probable</b> is to ---',
                 'answer' => 'ch5',
@@ -539,7 +539,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 34,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'non-verbal',
                 'question' => 'Mr. and Mrs. DiNapoli have two sons and three daughters. When the whole family is together for dinner, they have to bring one extra chair to the table, How many chairs do they usually have around the table?',
                 'answer' => 'ch3',
@@ -555,7 +555,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 35,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => 'The opposite of <b>moderate</b> is ----',
                 'answer' => 'ch5',
@@ -603,7 +603,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 38,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => 'Every country must have ----',
                 'answer' => 'ch3',
@@ -619,7 +619,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 39,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'non-verbal',
                 'question' => 'What number is missing from this seires?    4    8    6    12    10    ?    18    36',
                 'answer' => 'ch4',
@@ -635,7 +635,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 40,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => 'Assume that ---- <br> All <b>A</b>s are <b>C</b>s.<br>Some <b>D</b>s are <b>C</b>s. No <b>B</b>s. are <b>C</b>s.',
                 'answer' => 'ch2',
@@ -715,7 +715,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 45,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => 'Whice word goes <i>most clearly</i> with: <b>forward    sideways    down</b>?',
                 'answer' => 'ch2',
@@ -731,7 +731,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 46,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'non-verbal',
                 'question' => 'What number is equal to one-third of the difference between the squares of ten and eight?',
                 'answer' => 'ch3',
@@ -747,7 +747,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 47,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'non-verbal',
                 'question' => 'What letter comes next in this series?    H    I    K    L    N    O    ?',
                 'answer' => 'ch3',
@@ -795,7 +795,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id' => 50,
-                'format' => '1',
+                'format' => 'text',
                 'test_type' => 'Verbal',
                 'question' => '<b>Electricity</b> is to <b>light bulb</b> as ----',
                 'answer' => 'ch4',
