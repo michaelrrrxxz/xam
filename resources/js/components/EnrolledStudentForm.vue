@@ -82,7 +82,29 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const courses = ['BSIT', 'BSCS', 'BSIS', 'BSECE', 'BSME', 'BSA', 'BSBA'];
+const courses = [
+  'BSIT',
+  'BSN',
+  'BSBA-FM',
+  'BSBA-MM',
+  'BSED-EU',
+  'BSED-FIL',
+  'BSED-MATH',
+  'BSED-SCI',
+  'BSA',
+  'BSED-ENGLISH',
+  'BEED',
+  'AB-MASS COM',
+  'BSCRIM',
+  'BSHM',
+  'BSMA',
+  'AB-POL SCI',
+  'BSBA-HRM',
+  'MIDWIFERY',
+  'AB-ENG',
+  'BSGE',
+  'BSBA-MA',
+];
 
 defineProps<{
   form: {

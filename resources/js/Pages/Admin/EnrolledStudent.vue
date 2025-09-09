@@ -42,7 +42,7 @@ import 'vue-sonner/style.css';
 import { Pencil, Trash, Ellipsis, BadgeQuestionMark, Plus } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
 import EnrolledStudentForm from '@/components/EnrolledStudentForm.vue';
-import UploadForm from '@/components/EnrolledStudentUpload.vue';
+import UploadForm from '@/components/UploadForm.vue';
 
 import { useRouter } from 'vue-router';
 
@@ -71,6 +71,8 @@ const isOpen = ref(false);
 const isUploadOpen = ref(false);
 const isEditOpen = ref(false);
 const isSaving = ref(false);
+const sortKey = ref<'id_number' | 'first_name' | 'last_name'>('id_number');
+const sortOrder = ref<'asc' | 'desc'>('asc');
 const errors = ref<
   Partial<
     Record<'id_number' | 'last_name' | 'first_name' | 'birth_day' | 'course' | 'gender', string>
@@ -81,6 +83,10 @@ const isLoading = ref(false);
 
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const searchQuery = ref('');
+
+const uploadForm = reactive({
+  upload_file: null as File | null,
+});
 
 const isUploadMode = ref(true);
 const toggleMode = (val: boolean) => {
@@ -121,10 +127,6 @@ const fetchEnrolledStudents = async () => {
     isLoading.value = false;
   }
 };
-
-const uploadForm = reactive({
-  upload_file: null as File | null,
-});
 
 // Open Add Modal
 const openModal = () => {
@@ -206,19 +208,20 @@ const saveEnrolledStudent = async () => {
   }
 };
 
-const handleUpload = async () => {
-  if (!uploadForm.upload_file) {
-    alert('Please select a file before uploading.');
-    return;
-  }
+const uploadEnrolledStudent = async (formData: FormData) => {
   isSaving.value = true;
-
-  const payload = new FormData();
-  payload.append('upload_file', uploadForm.upload_file);
-
-  await api.post('admin/students/upload', payload);
-
-  isSaving.value = false;
+  try {
+    await api.post('admin/enrolled-students/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    toast.success('Students uploaded successfully!');
+    await fetchEnrolledStudents();
+    isUploadOpen.value = false;
+  } catch (error) {
+    toast.error('Failed to upload students.');
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 // Delete EnrolledStudent
@@ -241,11 +244,42 @@ const deleteEnrolledStudent = async (id: number) => {
   });
 };
 
+const toggleSort = (key: typeof sortKey.value) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortOrder.value = 'asc';
+  }
+};
+
 const filteredEnrolledStudents = computed(() => {
-  if (!searchQuery.value) return enrolledStudents.value;
-  return enrolledStudents.value.filter((e) =>
-    e.id_number.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+  // start with search filtering
+  let data = enrolledStudents.value;
+  if (searchQuery.value) {
+    data = data.filter((e) => e.id_number.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  }
+
+  // then sort
+  return [...data].sort((a, b) => {
+    let valA = '';
+    let valB = '';
+
+    if (sortKey.value === 'id_number') {
+      valA = a.id_number.toLowerCase();
+      valB = b.id_number.toLowerCase();
+    } else if (sortKey.value === 'last_name') {
+      valA = a.last_name.toLowerCase();
+      valB = b.last_name.toLowerCase();
+    } else if (sortKey.value === 'first_name') {
+      valA = a.first_name.toLowerCase();
+      valB = b.first_name.toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+    return 0;
+  });
 });
 
 // Fetch enrolledStudents on mount
@@ -287,8 +321,18 @@ onMounted(fetchEnrolledStudents);
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Id Number</TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead @click="() => toggleSort('id_number')" class="cursor-pointer">
+                ID Number
+                <span v-if="sortKey === 'id_number'">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </TableHead>
+              <TableHead @click="() => toggleSort('last_name')" class="cursor-pointer">
+                Name
+                <span v-if="sortKey === 'last_name'">
+                  {{ sortOrder === 'asc' ? '↑' : '↓' }}
+                </span>
+              </TableHead>
               <TableHead>Course</TableHead>
               <TableHead></TableHead>
             </TableRow>
@@ -370,7 +414,8 @@ onMounted(fetchEnrolledStudents);
             >
           </DialogHeader>
           <!-- reuse your form -->
-          <UploadForm :form="uploadForm" :isSaving="isSaving" @upload="handleUpload" />
+
+          <UploadForm :errors="errors" :isSaving="isSaving" @save="uploadEnrolledStudent" />
         </DialogContent>
       </Dialog>
 
@@ -401,7 +446,7 @@ onMounted(fetchEnrolledStudents);
             >
           </DrawerHeader>
           <!-- reuse the same form -->
-          <UploadForm :form="uploadForm" :isSaving="isSaving" @upload="handleUpload" />
+          <UploadForm :errors="errors" :isSaving="isSaving" @save="uploadEnrolledStudent" />
         </DrawerContent>
       </Drawer>
 

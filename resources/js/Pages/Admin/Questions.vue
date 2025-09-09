@@ -457,8 +457,7 @@ const filteredQuestion = computed(() => {
             </template>
             <template v-else>
               <TableRow v-for="q in filteredQuestion" :key="q.id">
-             <TableCell class="max-w-xs truncate" v-html="q.question"></TableCell>
-
+                <TableCell class="max-w-xs truncate" v-html="q.question"></TableCell>
 
                 <TableCell>{{
                   (q.test_type || '').charAt(0).toUpperCase() + (q.test_type || '').slice(1)

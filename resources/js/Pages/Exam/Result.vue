@@ -3,9 +3,7 @@
     <Card class="w-full max-w-3xl shadow-md p-6">
       <CardHeader class="text-center">
         <CardTitle class="text-2xl font-bold">Exam Results</CardTitle>
-        <CardDescription>
-          Here's a summary of your performance
-        </CardDescription>
+        <CardDescription> Here's a summary of your performance </CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -18,7 +16,10 @@
         <div v-else-if="result" class="space-y-6">
           <!-- Student Info -->
           <div class="border-b pb-3">
-            <div class="text-lg font-semibold">Name:    {{ result.student.last_name }}, {{ result.student.first_name }} {{ result.student.middle_name }}</div>
+            <div class="text-lg font-semibold">
+              Name: {{ result.student.last_name }}, {{ result.student.first_name }}
+              {{ result.student.middle_name }}
+            </div>
             <p class="text-sm text-muted-foreground">Batch: {{ result.batch.name }}</p>
             <p class="text-sm text-muted-foreground">Group: {{ information?.group_abc }}</p>
           </div>
@@ -75,7 +76,11 @@
             <div class="grid gap-3">
               <div class="flex justify-between items-center p-3 rounded bg-muted">
                 <span>Verbal Comprehension</span>
-                <span>{{ result.verbal_comprehension }} ({{ result.verbal_comprehension_category }})</span>
+                <span
+                  >{{ result.verbal_comprehension }} ({{
+                    result.verbal_comprehension_category
+                  }})</span
+                >
               </div>
               <div class="flex justify-between items-center p-3 rounded bg-muted">
                 <span>Verbal Reasoning</span>
@@ -83,11 +88,17 @@
               </div>
               <div class="flex justify-between items-center p-3 rounded bg-muted">
                 <span>Quantitative Reasoning</span>
-                <span>{{ result.quantitative_reasoning }} ({{ result.quantitative_reasoning_category }})</span>
+                <span
+                  >{{ result.quantitative_reasoning }} ({{
+                    result.quantitative_reasoning_category
+                  }})</span
+                >
               </div>
               <div class="flex justify-between items-center p-3 rounded bg-muted">
                 <span>Figural Reasoning</span>
-                <span>{{ result.figural_reasoning }} ({{ result.figural_reasoning_category }})</span>
+                <span
+                  >{{ result.figural_reasoning }} ({{ result.figural_reasoning_category }})</span
+                >
               </div>
             </div>
           </div>
@@ -118,14 +129,11 @@
         </div>
 
         <!-- No Results -->
-        <div v-else class="text-center text-destructive">
-          No results found.
-        </div>
+        <div v-else class="text-center text-destructive">No results found.</div>
       </CardContent>
     </Card>
   </div>
 </template>
-
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';

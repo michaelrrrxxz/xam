@@ -54,6 +54,7 @@ interface Batch {
   description: string | null;
   access_key: number;
   isLocked: boolean;
+  created_at: Date;
 }
 
 // Reactive States
@@ -65,6 +66,8 @@ const errors = ref<{ name?: string }>({});
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const searchQuery = ref('');
 const isLoading = ref(true);
+const sortKey = ref<'year' | 'name' | 'access_key'>('year');
+const sortOrder = ref<'asc' | 'desc'>('asc');
 
 // Unified form state
 const form = reactive<{ id: number | null; name: string; description: string }>({
@@ -232,12 +235,35 @@ const print = async (id: number) => {
 };
 
 const goToResults = (id: number) => {
-  router.push({ name: "ResultsByBatch", params: { id } });
+  router.push({ name: 'ResultsByBatch', params: { id } });
+};
+
+const toggleSort = (key: typeof sortKey.value) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortOrder.value = 'asc';
+  }
 };
 
 const filteredBatch = computed(() => {
-  if (!searchQuery.value) return batch.value;
-  return batch.value.filter((e) => e.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  let data = batch.value;
+
+  // search
+  if (searchQuery.value) {
+    data = data.filter((e) => e.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  }
+
+  // sort
+  return [...data].sort((a, b) => {
+    let valA = sortKey.value === 'year' ? new Date(a.created_at).getFullYear() : a[sortKey.value];
+    let valB = sortKey.value === 'year' ? new Date(b.created_at).getFullYear() : b[sortKey.value];
+
+    if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+    return 0;
+  });
 });
 
 // Fetch batch on mount
@@ -270,7 +296,8 @@ onMounted(fetchBatch);
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
+              <TableHead @click="() => toggleSort('year')">Year</TableHead>
+              <TableHead @click="() => toggleSort('name')">Name</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Access Key</TableHead>
               <TableHead>Status</TableHead>
@@ -282,6 +309,7 @@ onMounted(fetchBatch);
             <template v-if="isLoading">
               <TableRow v-for="n in 1" :key="n">
                 <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-20 rounded" /></TableCell>
@@ -290,6 +318,7 @@ onMounted(fetchBatch);
             </template>
             <template v-else>
               <TableRow v-for="b in filteredBatch" :key="b.id">
+                <TableCell>{{ new Date(b.created_at).getFullYear() }}</TableCell>
                 <TableCell>{{ b.name }}</TableCell>
                 <TableCell>{{ b.description }}</TableCell>
                 <TableCell>{{ b.access_key }}</TableCell>
@@ -310,10 +339,10 @@ onMounted(fetchBatch);
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
 
-                      <DropdownMenuItem  @click="goToResults(b.id)">
+                      <DropdownMenuItem @click="goToResults(b.id)">
                         <RatioIcon class="w-4 h-4 mr-2" /> Results
                       </DropdownMenuItem>
-                       <DropdownMenuItem  @click="print(b.id)">
+                      <DropdownMenuItem @click="print(b.id)">
                         <Printer class="w-4 h-4 mr-2" /> Print
                       </DropdownMenuItem>
                       <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">

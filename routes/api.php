@@ -17,6 +17,7 @@ use App\Http\Controllers\Examinee\ResultController as ExamineeResultController;
 
  use App\Http\Controllers\Admin\ResultController as AdminResultController;
  use App\Http\Controllers\Admin\QuestionController as AdminQuestionController;
+use  App\Http\Controllers\Admin\ImportEnrolledStudentController;
  use App\Http\Controllers\Admin\DashboardController;
 Route::middleware(['auth:sanctum'])->get('/v1/user', function (Request $request) {
     return $request->user();
@@ -34,7 +35,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('batch', BatchController::class);
         Route::apiResource('question', AdminQuestionController::class);
         Route::apiResource('enrolledStudent', EnrolledStudentController::class);
-
+        Route::post('enrolled-students/upload',[ImportEnrolledStudentController::class, 'store']);
         Route::put('batch/{id}/lock', [BatchController::class, 'lock']);
         Route::put('batch/{id}/activate', [BatchController::class, 'activate']);
     });

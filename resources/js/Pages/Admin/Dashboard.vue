@@ -9,29 +9,40 @@
 
       <!-- Cards Section -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Batch Card -->
         <Card class="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle class="text-lg font-medium">Batch</CardTitle>
-            <CardDescription>count</CardDescription>
+            <CardDescription>Total count</CardDescription>
           </CardHeader>
           <CardContent>
             <h2 class="text-2xl font-semibold tracking-tight">{{ count.batch }}</h2>
-            <div class="mt-2 h-4 w-32 bg-gray-100 dark:bg-gray-700 rounded animate-pulse"></div>
           </CardContent>
         </Card>
-      </div>
-      <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card v-for="n in 3" :key="n" class="rounded-2xl shadow-sm">
+
+        <!-- Enrolled Students Card -->
+        <Card class="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle class="text-lg font-medium">Metric {{ n }}</CardTitle>
-            <CardDescription>Performance Overview</CardDescription>
+            <CardTitle class="text-lg font-medium">Enrolled Students</CardTitle>
+            <CardDescription>Total count</CardDescription>
           </CardHeader>
           <CardContent>
-            <div class="h-6 w-24 bg-gray-200 dark:bg-gray-800 rounded animate-pulse"></div>
-            <div class="mt-2 h-4 w-32 bg-gray-100 dark:bg-gray-700 rounded animate-pulse"></div>
+            <h2 class="text-2xl font-semibold tracking-tight">{{ count.enrolledstudents }}</h2>
           </CardContent>
         </Card>
-      </div> -->
+        <!-- Finished Exams Card -->
+        <Card class="rounded-2xl shadow-sm">
+        <CardHeader>
+            <CardTitle class="text-lg font-medium">Finished Exams</CardTitle>
+            <CardDescription>Total count</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <h2 class="text-2xl font-semibold tracking-tight">{{ count.finishedexams }}</h2>
+        </CardContent>
+        </Card>
+
+      </div>
+
 
       <!-- Table Section -->
       <div class="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm p-4">
@@ -63,14 +74,16 @@ import api from '@/Api/Axios';
 
 interface Count {
   batch: number;
+  enrolledstudents: number;
+    finishedexams: number;
 }
 
-const count = ref<Count>({ batch: 0 }); // Use object, not array
+const count = ref<Count>({ batch: 0, enrolledstudents: 0, finishedexams: 0 });
 
 const fetchCount = async () => {
   try {
     const response = await api.get('/admin/dashboard');
-    count.value = response.data; // Assuming API returns { batch: 1 }
+    count.value = response.data;
   } catch (error) {
     console.error('Failed to fetch dashboard count:', error);
   }
@@ -78,19 +91,3 @@ const fetchCount = async () => {
 
 onMounted(fetchCount);
 </script>
-
-<style scoped>
-/* Smooth pulsing animation for placeholders */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-.animate-pulse {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-</style>

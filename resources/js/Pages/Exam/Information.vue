@@ -113,21 +113,20 @@
           </datalist>
         </div>
 
-
         <div class="grid gap-2 w-full">
-        <Label>Group</Label>
-        <Select v-model="form.group_abc">
+          <Label>Group</Label>
+          <Select v-model="form.group_abc">
             <SelectTrigger class="w-full">
-            <SelectValue placeholder="Select Group" />
+              <SelectValue placeholder="Select Group" />
             </SelectTrigger>
             <SelectContent>
-            <SelectItem value="a">A</SelectItem>
-            <SelectItem value="b">B</SelectItem>
-            <SelectItem value="c">C</SelectItem>
-            <SelectItem value="d">D</SelectItem>
-            <SelectItem value="e">E</SelectItem>
+              <SelectItem value="a">A</SelectItem>
+              <SelectItem value="b">B</SelectItem>
+              <SelectItem value="c">C</SelectItem>
+              <SelectItem value="d">D</SelectItem>
+              <SelectItem value="e">E</SelectItem>
             </SelectContent>
-        </Select>
+          </Select>
         </div>
 
         <!-- Submit Button -->
@@ -263,14 +262,12 @@ const submitInfo = async () => {
       JSON.stringify({
         school: form.value.school,
       })
-
     );
     localStorage.setItem(
       'info',
       JSON.stringify({
         group_abc: form.value.group_abc,
       })
-
     );
   } catch (error) {
     toast.error('Failed to save information. Please try again.');

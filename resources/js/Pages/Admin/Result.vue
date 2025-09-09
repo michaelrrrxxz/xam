@@ -36,7 +36,7 @@
               <TableHead colspan="2" title="Performance By Grade">PBG</TableHead>
               <TableHead colspan="5">Verbal</TableHead>
               <TableHead colspan="5">Non-Verbal</TableHead>
-                <TableHead rowspan="3" class="align-middle"></TableHead>
+              <TableHead rowspan="3" class="align-middle"></TableHead>
             </TableRow>
             <TableRow>
               <TableHead rowspan="2" class="align-middle" title="Percentile Rank">PR</TableHead>
@@ -113,10 +113,12 @@
                 <TableCell>{{ r.figural_reasoning }}</TableCell>
                 <TableCell>{{ r.figural_reasoning_category }}</TableCell>
                 <TableCell>{{ r.non_verbal }}</TableCell>
-                <TableCell> <Button @click="print(r.id)"class="flex items-center gap-2">
-    <Printer class="w-4 h-4" />
-    Print
-  </Button></TableCell>
+                <TableCell>
+                  <Button @click="print(r.id)" class="flex items-center gap-2">
+                    <Printer class="w-4 h-4" />
+                    Print
+                  </Button></TableCell
+                >
               </TableRow>
 
               <!-- No Data -->
@@ -215,7 +217,6 @@ const fetchResult = async () => {
 const print = async (id: number) => {
   window.open(`/results/${id}/print`, '_blank');
 };
-
 
 /* ---------------------- Computed ---------------------- */
 const filteredResults = computed(() => {

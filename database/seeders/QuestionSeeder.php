@@ -45,7 +45,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 3,
-                'format'    > 'photo',
+                'format'    => 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/3_q.jpg>',
                 'answer'    => 'ch4',
@@ -61,7 +61,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 4,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/4_q.jpg>',
                 'answer'    => 'ch3',
@@ -93,7 +93,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 6,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/6_q.jpg>',
                 'answer'    => 'ch3',
@@ -109,7 +109,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 7,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/7_q.jpg>',
                 'answer'    => 'ch5',
@@ -125,7 +125,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 8,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/8_q.jpg>',
                 'answer'    => 'ch3',
@@ -189,7 +189,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 12,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/12_q.jpg>',
                 'answer'    => 'ch4',
@@ -253,7 +253,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 16,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/16_q.jpg>',
                 'answer'    => 'ch4',
@@ -269,7 +269,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 17,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/17_q.jpg>',
                 'answer'    => 'ch3',
@@ -285,7 +285,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 18,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/18_q.jpg>',
                 'answer'    => 'ch2',
@@ -301,7 +301,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 19,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/19_q.jpg>',
                 'answer'    => 'ch3',
@@ -348,7 +348,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 22,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/22_q.jpg>',
                 'answer'    => 'ch2',
@@ -412,7 +412,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 26,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/26_q.jpg>',
                 'answer'    => 'ch3',
@@ -428,7 +428,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 27,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'Verbal',
                 'question'  => '<img src=storage/questions/27_q.jpg>',
                 'answer'    => 'ch3',
@@ -460,7 +460,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 29,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/29_q.jpg>',
                 'answer'    => 'ch5',
@@ -476,7 +476,7 @@ class QuestionSeeder extends Seeder
 
             [
                 'id'        => 30,
-                'format'    > 'photo',
+                'format'=> 'photo',
                 'test_type' => 'non-verbal',
                 'question'  => '<img src=storage/questions/30_q.jpg>',
                 'answer'    => 'ch3',

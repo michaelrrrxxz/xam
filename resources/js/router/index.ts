@@ -103,12 +103,12 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-  path: '/batch/:id/results',
-  name: 'ResultsByBatch',
-  component: ResultsByBatch,
-  meta: { title: `Batch Results - ${appName}`, requiresAuth: true },
-  props: true,
-},
+    path: '/batch/:id/results',
+    name: 'ResultsByBatch',
+    component: ResultsByBatch,
+    meta: { title: `Batch Results - ${appName}`, requiresAuth: true },
+    props: true,
+  },
 
   {
     path: '/admin/results',

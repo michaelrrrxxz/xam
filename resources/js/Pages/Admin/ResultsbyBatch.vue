@@ -36,7 +36,7 @@
               <TableHead colspan="2" title="Performance By Grade">PBG</TableHead>
               <TableHead colspan="5">Verbal</TableHead>
               <TableHead colspan="5">Non-Verbal</TableHead>
-                <TableHead rowspan="3" class="align-middle"></TableHead>
+              <TableHead rowspan="3" class="align-middle"></TableHead>
             </TableRow>
             <TableRow>
               <TableHead rowspan="2" class="align-middle" title="Percentile Rank">PR</TableHead>
@@ -113,10 +113,12 @@
                 <TableCell>{{ r.figural_reasoning }}</TableCell>
                 <TableCell>{{ r.figural_reasoning_category }}</TableCell>
                 <TableCell>{{ r.non_verbal }}</TableCell>
-                <TableCell> <Button @click="print(r.id)"class="flex items-center gap-2">
-    <Printer class="w-4 h-4" />
-    Print
-  </Button></TableCell>
+                <TableCell>
+                  <Button @click="print(r.id)" class="flex items-center gap-2">
+                    <Printer class="w-4 h-4" />
+                    Print
+                  </Button></TableCell
+                >
               </TableRow>
 
               <!-- No Data -->
@@ -196,7 +198,7 @@ const isLoading = ref(true);
 const route = useRoute();
 
 /* ---------------------- Fetch Data ---------------------- */
-const fetchResult = async (batchId:number) => {
+const fetchResult = async (batchId: number) => {
   isLoading.value = true;
   try {
     const response = await api.get(`/admin/results/batch/${batchId}`);
@@ -230,7 +232,6 @@ onMounted(() => {
   fetchResult(batchId);
 });
 </script>
-
 
 <style scoped>
 /* Smooth pulsing animation for placeholders */
