@@ -448,7 +448,7 @@ const filteredQuestion = computed(() => {
 
           <TableBody>
             <template v-if="isLoading">
-              <TableRow v-for="n in 1" :key="n">
+              <TableRow v-for="n in 72" :key="n">
                 <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>

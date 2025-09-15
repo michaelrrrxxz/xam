@@ -18,12 +18,10 @@ class ResultController extends Controller
     public function print($id)
     {
         $result = Result::with(['batch', 'student'])->findOrFail($id);
-
-        // Load a Blade view for printing
         return view('results.print', compact('result'));
     }
 
-  
+
     public function resultsByBatch($batchId)
     {
         $results = Result::with([

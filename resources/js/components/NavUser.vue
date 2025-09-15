@@ -1,7 +1,22 @@
 <script setup lang="ts">
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-vue-next';
-import { ref, onMounted } from 'vue';
-import api from '@/Api/Axios';
+import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/useUserStore';
+import { toast } from 'vue-sonner';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles,
+  Settings2Icon,
+  Settings2,
+} from 'lucide-vue-next';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -18,66 +33,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { toast } from 'vue-sonner';
 
-interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
+const user = useUserStore();
 
-const user = ref<User>({
-  name: '',
-  email: '',
-  avatar: '/avatars/default.jpg',
-});
-
-// Fetch user data
-const fetchUser = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    const response = await api.get('/user', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    user.value = {
-      name: response.data?.name ?? '',
-      email: response.data?.email ?? '',
-      avatar: '/avatars/default.jpg', // Provide default avatar if none exists in response
-    };
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-  }
-};
-
-const logout = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    await api.post(
-      '/logout',
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-
-    localStorage.removeItem('token');
-    toast.success('Logged out successfully');
-    window.location.href = '/login';
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-};
-
-onMounted(() => {
-  fetchUser();
+onMounted(async () => {
+  await user.fetchUser();
 });
 
 const { isMobile } = useSidebar();
+
+function handleLogout() {
+  user.logout().then(() => {
+    toast.success('Logged out successfully');
+    window.location.href = '/';
+  });
+}
+
+const goToSettings = () => {
+  router.push({ name: 'Settings' });
+};
 </script>
 
 <template>
@@ -100,6 +74,7 @@ const { isMobile } = useSidebar();
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent
           class="w-[--reka-dropdown-menu-trigger-width] min-w-56 rounded-lg"
           :side="isMobile ? 'bottom' : 'right'"
@@ -118,20 +93,21 @@ const { isMobile } = useSidebar();
               </div>
             </div>
           </DropdownMenuLabel>
+
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Sparkles />
-              Upgrade to Pro
+            <DropdownMenuItem @click="goToSettings">
+              <Settings2 />
+              Settings
             </DropdownMenuItem>
           </DropdownMenuGroup>
-          <DropdownMenuSeparator />
+          <!-- <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <BadgeCheck />
               Account
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem >
               <CreditCard />
               Billing
             </DropdownMenuItem>
@@ -139,9 +115,9 @@ const { isMobile } = useSidebar();
               <Bell />
               Notifications
             </DropdownMenuItem>
-          </DropdownMenuGroup>
+          </DropdownMenuGroup> -->
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="logout">
+          <DropdownMenuItem @click="handleLogout">
             <LogOut />
             Log out
           </DropdownMenuItem>

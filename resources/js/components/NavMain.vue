@@ -32,10 +32,11 @@ const isActive = (url: string) => {
         <RouterLink :to="item.url">
           <SidebarMenuButton
             :tooltip="item.title"
-            :class="{
-              'bg-gray-200 text-black': isActive(item.url),
-              'hover:bg-gray-100': !isActive(item.url),
-            }"
+            :class="
+              isActive(item.url)
+                ? 'bg-sidebar-primary text-sidebar-primary-foreground font-medium hover:bg-sidebar-primary hover:text-sidebar-primary-foreground'
+                : 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+            "
           >
             <component :is="item.icon" v-if="item.icon" class="mr-2" />
             <span>{{ item.title }}</span>

@@ -7,6 +7,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/Api/Axios';
 import { toast } from 'vue-sonner';
+import Logo from '@/components/Logo.vue';
 const router = useRouter();
 
 // Reactive form state
@@ -53,8 +54,6 @@ const handleLogin = async () => {
         <Label>Password</Label>
         <Input type="password" v-model="form.password" placeholder="********" />
       </div>
-
-      <Input type="text" />
 
       <!-- Submit -->
       <Button type="submit" class="w-full">Login</Button>

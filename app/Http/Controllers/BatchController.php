@@ -136,16 +136,20 @@ class BatchController extends Controller
 
 
     public function print($batchId)
-    {
-        $results = Result::with([
-                'batch:id,name',
-                'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'
-            ])
-            ->where('batch_id', $batchId)
-            ->get();
+{
 
-        return view('results.batchprint', compact('results'));
-    }
+    $batch = Batch::select('id', 'name', 'description')
+        ->findOrFail($batchId);
+
+    $result = Result::with([
+            'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'
+        ])
+        ->where('batch_id', $batchId)
+        ->get();
+
+    return view('results.batchprint', compact('batch', 'result'));
+}
+
 
 
 }

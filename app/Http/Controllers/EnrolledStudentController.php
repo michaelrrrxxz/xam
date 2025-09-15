@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EnrolledStudent;
+use App\Models\Result;
 use App\Http\Requests\StoreEnrolledStudentRequest;
 use App\Http\Requests\UpdateEnrolledStudentRequest;
 
@@ -81,4 +82,25 @@ class EnrolledStudentController extends Controller
         ], 200);
 
     }
+
+        public function showResults($studentId)
+    {
+        $results = Result::with([
+                'batch:id,name',
+                'student:id,id_number,last_name,first_name,middle_name,birth_day,course,gender'
+            ])
+            ->where('student_id', $studentId)
+            ->latest()
+            ->get();
+
+        if ($results->isEmpty()) {
+            return response()->json(['message' => 'No results found.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Results fetched successfully',
+            'results' => $results,
+        ]);
+    }
+
 }

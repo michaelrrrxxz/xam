@@ -19,13 +19,24 @@ use App\Http\Controllers\Examinee\ResultController as ExamineeResultController;
  use App\Http\Controllers\Admin\QuestionController as AdminQuestionController;
 use  App\Http\Controllers\Admin\ImportEnrolledStudentController;
  use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SettingController;
+
+
 Route::middleware(['auth:sanctum'])->get('/v1/user', function (Request $request) {
     return $request->user();
 });
 
 
 
+
+
+
 Route::prefix('v1')->group(function () {
+
+
+
+
+
 
     Route::prefix('admin')->group(function(){
         Route::apiResource('result', AdminResultController::class)->only(['index']);
@@ -35,9 +46,13 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('batch', BatchController::class);
         Route::apiResource('question', AdminQuestionController::class);
         Route::apiResource('enrolledStudent', EnrolledStudentController::class);
+          Route::get('/enrolledStudent/results/{id}', [ EnrolledStudentController::class, 'showResults']);
         Route::post('enrolled-students/upload',[ImportEnrolledStudentController::class, 'store']);
         Route::put('batch/{id}/lock', [BatchController::class, 'lock']);
         Route::put('batch/{id}/activate', [BatchController::class, 'activate']);
+        Route::get('/settings', [SettingController::class, 'show']);
+        Route::post('/settings', [SettingController::class, 'store']);
+
     });
 
 
@@ -69,3 +84,4 @@ Route::prefix('v1')->group(function () {
 
 
 require __DIR__.'/auth.php';
+require __DIR__ .'/setting.php';

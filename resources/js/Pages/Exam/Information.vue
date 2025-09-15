@@ -40,7 +40,7 @@
             class="w-full bg-muted cursor-not-allowed"
           />
         </div>
-
+        <Separator></Separator>
         <!-- Address Section -->
         <div class="space-y-4">
           <!-- Region -->
@@ -96,6 +96,7 @@
             </Select>
           </div>
         </div>
+        <Separator></Separator>
 
         <div class="grid gap-2">
           <Label>School </Label>
@@ -143,6 +144,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'vue-sonner';
 import api from '@/Api/Axios';
 import {

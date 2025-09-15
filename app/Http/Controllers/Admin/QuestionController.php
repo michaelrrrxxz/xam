@@ -9,6 +9,8 @@ use App\Models\Question;
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 
+use App\Services\QuestionService;
+
 class QuestionController extends Controller
 {
     /**
@@ -32,42 +34,22 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(StoreQuestionRequest $request)
-{
-    $validated = $request->validated();
+    public function store(StoreQuestionRequest $request, QuestionService $service)
+    {
+        $validated = $request->validated();
 
-    // Handle question
-    if ($request->hasFile('question_image')) {
-        $path = $request->file('question_image')->store('questions', 'public');
-        $validated['question'] = $path; // still store the relative path in DB
+        $question = $service->store($validated, $request);
+
+        return response()->json([
+            'message' => 'Question created successfully',
+            'data'    => $question,
+        ], 201);
     }
 
-    // Handle choices
-    foreach (['ch1', 'ch2', 'ch3', 'ch4', 'ch5'] as $choice) {
-        if ($request->hasFile($choice . '_image')) {
-            $path = $request->file($choice . '_image')->store('choices', 'public');
-            $validated[$choice] = $path;
-        }
+    public function show(Question $question, QuestionService $service)
+    {
+        return response()->json($service->transformUrls($question), 200);
     }
-
-    $question = Question::create($validated);
-
-    // Convert stored paths to full URLs for frontend
-    $question->question = $question->question
-        ? asset('storage/' . $question->question)
-        : null;
-
-    foreach (['ch1', 'ch2', 'ch3', 'ch4', 'ch5'] as $choice) {
-        if ($question->$choice) {
-            $question->$choice = asset('storage/' . $question->$choice);
-        }
-    }
-
-    return response()->json([
-        'message' => 'Question created successfully',
-        'data'    => $question,
-    ], 201);
-}
 
 
 
@@ -76,18 +58,6 @@ public function store(StoreQuestionRequest $request)
     /**
      * Display the specified resource.
      */
-public function show(Question $question)
-{
-    $baseUrl = asset('storage');
-
-    foreach (['question', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5'] as $field) {
-        if ($question->$field && !str_starts_with($question->$field, 'http')) {
-            $question->$field = $baseUrl . '/' . $question->$field;
-        }
-    }
-
-    return response()->json($question, 200);
-}
 
 
     /**

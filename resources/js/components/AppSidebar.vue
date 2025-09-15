@@ -19,7 +19,8 @@ import {
 } from '@/components/ui/sidebar';
 import { onMounted, ref } from 'vue';
 import api from '@/Api/Axios';
-
+import Logo from './Logo.vue';
+import Separator from './ui/separator/Separator.vue';
 // Type for user object
 interface User {
   name: string;
@@ -38,33 +39,11 @@ const user = ref<User>({
 const props = defineProps<SidebarProps>();
 
 // Fetch user data
-const fetchUser = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    const response = await api.get('/user', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    user.value = {
-      name: response.data?.name ?? '',
-      email: response.data?.email ?? '',
-      avatar: '/avatars/default.jpg', // Provide default avatar if none exists in response
-    };
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-  }
-};
 
 // Fetch user data on component mount
-onMounted(() => {
-  fetchUser();
-});
 
 // Data for the Sidebar
 const data = ref({
-  user: user.value,
   teams: [
     {
       name: 'Michael Angelo',
@@ -110,7 +89,9 @@ const data = ref({
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <TeamSwitcher :teams="data.teams" />
+      <!-- <TeamSwitcher :teams="data.teams" /> -->
+      <Logo />
+      <Separator></Separator>
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
@@ -118,7 +99,7 @@ const data = ref({
     <SidebarFooter>
       <!-- Debugging: Directly display user data here -->
 
-      <NavUser :user="data.user" />
+      <NavUser />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

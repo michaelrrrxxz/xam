@@ -53,15 +53,20 @@
     </div>
 
     <!-- Gender -->
-    <div class="grid gap-2">
-      <Label for="gender">Gender</Label>
-      <select id="gender" v-model="form.gender" class="border rounded-md p-2">
-        <option disabled value="">Select Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
-      <span v-if="errors.gender" class="text-sm text-red-500">{{ errors.gender }}</span>
-    </div>
+   <div class="grid gap-2">
+  <Label for="gender">Gender</Label>
+  <Select v-model="form.gender">
+    <SelectTrigger id="gender" class="w-full">
+      <SelectValue placeholder="Select Gender" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="Male">Male</SelectItem>
+      <SelectItem value="Female">Female</SelectItem>
+    </SelectContent>
+  </Select>
+  <span v-if="errors.gender" class="text-sm text-red-500">{{ errors.gender }}</span>
+</div>
+
 
     <!-- Submit Button -->
     <Button type="submit" :disabled="isSaving">Save</Button>

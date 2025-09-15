@@ -13,54 +13,246 @@
           />
         </div>
 
+        <Select v-model="ageFilter">
+          <SelectTrigger class="w-[180px]">
+            <SelectValue placeholder="Filter by age" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Ages</SelectItem>
+              <SelectItem value="16below">16 or below</SelectItem>
+              <SelectItem value="17">17</SelectItem>
+              <SelectItem value="18above">18 and above</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select v-model="courseFilter">
+          <SelectTrigger class="w-[180px]">
+            <SelectValue placeholder="Filter by course" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Courses</SelectItem>
+              <SelectItem v-for="course in uniqueCourses" :key="course" :value="course">
+                {{ course }}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
         <!-- Add Button -->
-        <Button size="sm" variant="secondary" class="flex items-center gap-2">
-          <Plus class="w-4 h-4" />
-          Add Result
+        <Button @click="fetchResult" size="sm" variant="secondary" class="flex items-center gap-2">
+          Refresh
         </Button>
       </div>
 
       <!-- Results Table -->
       <div class="w-full overflow-x-auto rounded-md border mt-4">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead rowspan="3" class="align-middle">ID No.</TableHead>
-              <TableHead rowspan="3" class="align-middle">Course</TableHead>
-              <TableHead rowspan="3" style="width: 200px" class="align-middle">Name</TableHead>
-              <TableHead rowspan="3" class="align-middle" title="Raw Score">Raw Score</TableHead>
-              <TableHead rowspan="3" class="align-middle" title="Student Ability Index"
-                >SAI</TableHead
-              >
-              <TableHead colspan="2" title="Performance By Age">PBA</TableHead>
-              <TableHead colspan="2" title="Performance By Grade">PBG</TableHead>
-              <TableHead colspan="5">Verbal</TableHead>
-              <TableHead colspan="5">Non-Verbal</TableHead>
-              <TableHead rowspan="3" class="align-middle"></TableHead>
-            </TableRow>
-            <TableRow>
-              <TableHead rowspan="2" class="align-middle" title="Percentile Rank">PR</TableHead>
-              <TableHead rowspan="2" class="align-middle" title="Stanine">S</TableHead>
-              <TableHead rowspan="2" class="align-middle" title="Percentile Rank">PR</TableHead>
-              <TableHead rowspan="2" class="align-middle" title="Stanine">S</TableHead>
-              <TableHead colspan="2" title="Verbal Comprehension">VC</TableHead>
-              <TableHead colspan="2" title="Verbal Reasoning">VR</TableHead>
-              <TableHead rowspan="2" class="align-middle">Total</TableHead>
-              <TableHead colspan="2" title="Quantitative Reasoning">QR</TableHead>
-              <TableHead colspan="2" title="Figural Reasoning">FR</TableHead>
-              <TableHead rowspan="2" class="align-middle">Total</TableHead>
-            </TableRow>
-            <TableRow>
-              <TableHead class="align-middle" title="Score">S</TableHead>
-              <TableHead class="align-middle" title="Performance Category">PC</TableHead>
-              <TableHead class="align-middle" title="Score">S</TableHead>
-              <TableHead class="align-middle" title="Performance Category">PC</TableHead>
-              <TableHead class="align-middle" title="Score">S</TableHead>
-              <TableHead class="align-middle" title="Performance Category">PC</TableHead>
-              <TableHead class="align-middle" title="Score">S</TableHead>
-              <TableHead class="align-middle" title="Performance Category">PC</TableHead>
-            </TableRow>
-          </TableHeader>
+        <TableHeader>
+  <TableRow>
+    <!-- Not sortable -->
+    <TableHead rowspan="3" class="align-middle">ID No.</TableHead>
+
+    <!-- Sortable: Name -->
+    <TableHead
+      rowspan="3"
+      style="width: 200px"
+      class="align-middle cursor-pointer"
+      @click="() => toggleSort('name')"
+    >
+      Name
+      <span v-if="sortKey === 'name'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- Sortable: Course -->
+    <TableHead
+      rowspan="3"
+      class="align-middle cursor-pointer"
+      @click="() => toggleSort('course')"
+    >
+      Course
+      <span v-if="sortKey === 'course'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- Sortable: Raw Score -->
+    <TableHead
+      rowspan="3"
+      class="align-middle cursor-pointer"
+      @click="() => toggleSort('total_score')"
+    >
+      Raw Score
+      <span v-if="sortKey === 'total_score'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- Sortable: SAI -->
+    <TableHead
+      rowspan="3"
+      class="align-middle cursor-pointer"
+      title="Student Ability Index"
+      @click="() => toggleSort('sai_t')"
+    >
+      SAI
+      <span v-if="sortKey === 'sai_t'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <TableHead colspan="2" title="Performance By Age">PBA</TableHead>
+    <TableHead colspan="2" title="Performance By Grade">PBG</TableHead>
+    <TableHead colspan="5">Verbal</TableHead>
+    <TableHead colspan="5">Non-Verbal</TableHead>
+    <TableHead rowspan="3" class="align-middle"></TableHead>
+  </TableRow>
+
+  <TableRow>
+    <!-- PBA -->
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      title="Percentile Rank"
+      @click="() => toggleSort('pba_pr_t')"
+    >
+      PR
+      <span v-if="sortKey === 'pba_pr_t'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      title="Stanine"
+      @click="() => toggleSort('pba_s_t')"
+    >
+      S
+      <span v-if="sortKey === 'pba_s_t'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- PBG -->
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      title="Percentile Rank"
+      @click="() => toggleSort('pbg_pr_t')"
+    >
+      PR
+      <span v-if="sortKey === 'pbg_pr_t'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      title="Stanine"
+      @click="() => toggleSort('pbg_s_t')"
+    >
+      S
+      <span v-if="sortKey === 'pbg_s_t'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- Verbal -->
+    <TableHead colspan="2" title="Verbal Comprehension">VC</TableHead>
+    <TableHead colspan="2" title="Verbal Reasoning">VR</TableHead>
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      @click="() => toggleSort('verbal')"
+    >
+      Total
+      <span v-if="sortKey === 'verbal'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- Non-Verbal -->
+    <TableHead colspan="2" title="Quantitative Reasoning">QR</TableHead>
+    <TableHead colspan="2" title="Figural Reasoning">FR</TableHead>
+    <TableHead
+      rowspan="2"
+      class="align-middle cursor-pointer"
+      @click="() => toggleSort('non_verbal')"
+    >
+      Total
+      <span v-if="sortKey === 'non_verbal'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+  </TableRow>
+
+  <TableRow>
+    <!-- VC -->
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Score"
+      @click="() => toggleSort('verbal_comprehension')"
+    >
+      S
+      <span v-if="sortKey === 'verbal_comprehension'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Performance Category"
+      @click="() => toggleSort('verbal_comprehension_category')"
+    >
+      PC
+      <span
+        v-if="sortKey === 'verbal_comprehension_category'"
+      >{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- VR -->
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Score"
+      @click="() => toggleSort('verbal_reasoning')"
+    >
+      S
+      <span v-if="sortKey === 'verbal_reasoning'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Performance Category"
+      @click="() => toggleSort('verbal_reasoning_category')"
+    >
+      PC
+      <span
+        v-if="sortKey === 'verbal_reasoning_category'"
+      >{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- QR -->
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Score"
+      @click="() => toggleSort('quantitative_reasoning')"
+    >
+      S
+      <span v-if="sortKey === 'quantitative_reasoning'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Performance Category"
+      @click="() => toggleSort('quantitative_reasoning_category')"
+    >
+      PC
+      <span
+        v-if="sortKey === 'quantitative_reasoning_category'"
+      >{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+
+    <!-- FR -->
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Score"
+      @click="() => toggleSort('figural_reasoning')"
+    >
+      S
+      <span v-if="sortKey === 'figural_reasoning'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+    <TableHead
+      class="align-middle cursor-pointer"
+      title="Performance Category"
+      @click="() => toggleSort('figural_reasoning_category')"
+    >
+      PC
+      <span
+        v-if="sortKey === 'figural_reasoning_category'"
+      >{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+    </TableHead>
+  </TableRow>
+</TableHeader>
+
 
           <TableBody>
             <!-- Loading State -->
@@ -92,11 +284,15 @@
             <!-- Loaded State -->
             <template v-else>
               <TableRow v-for="r in filteredResults" :key="r.id">
+                <!-- <TableCell>
+                  {{ calculateAgeAtExam(r.student.birth_day, r.created_at) }}
+                </TableCell> -->
+
                 <TableCell>{{ r.student.id_number }}</TableCell>
-                <TableCell>{{ r.student.course }}</TableCell>
                 <TableCell>
                   {{ r.student.last_name }}, {{ r.student.first_name }} {{ r.student.middle_name }}
                 </TableCell>
+                  <TableCell>{{ r.student.course }}</TableCell>
                 <TableCell>{{ r.total_score }}</TableCell>
                 <TableCell>{{ r.sai_t }}</TableCell>
                 <TableCell>{{ r.pba_pr_t }}</TableCell>
@@ -123,7 +319,7 @@
 
               <!-- No Data -->
               <TableRow v-if="!filteredResults.length">
-                <TableCell colspan="4" class="text-center py-4 text-muted">
+                <TableCell colspan="20" class="text-center py-4 text-muted">
                   No data available.
                 </TableCell>
               </TableRow>
@@ -147,10 +343,19 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Plus, Printer } from 'lucide-vue-next';
-
+import dayjs from 'dayjs';
 /* ---------------------- Types ---------------------- */
 interface Student {
   id: number;
@@ -194,12 +399,26 @@ interface Result {
 
   figural_reasoning: number;
   figural_reasoning_category: string;
+  created_at: string;
 }
 
 /* ---------------------- State ---------------------- */
 const result = ref<Result[]>([]);
 const searchQuery = ref('');
 const isLoading = ref(true);
+const ageFilter = ref<'all' | '16below' | '17' | '18above'>('all');
+const courseFilter = ref<Student['course'] | 'all'>('all');
+const sortKey = ref<string>(''); // empty = no sorting
+const sortOrder = ref<'asc' | 'desc'>('asc');
+
+const toggleSort = (key: string) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortOrder.value = 'asc';
+  }
+};
 
 /* ---------------------- Fetch Data ---------------------- */
 const fetchResult = async () => {
@@ -220,15 +439,86 @@ const print = async (id: number) => {
 
 /* ---------------------- Computed ---------------------- */
 const filteredResults = computed(() => {
-  if (!searchQuery.value) return result.value;
-  const query = searchQuery.value.toLowerCase();
-  return result.value.filter(
-    (r) =>
-      `${r.student.last_name} ${r.student.first_name} ${r.student.middle_name}`
-        .toLowerCase()
-        .includes(query) || r.student.id_number.toLowerCase().includes(query)
-  );
+  let results = result.value;
+
+  // Search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    results = results.filter(
+      (r) =>
+        `${r.student.last_name} ${r.student.first_name} ${r.student.middle_name}`
+          .toLowerCase()
+          .includes(query) || r.student.id_number.toLowerCase().includes(query)
+    );
+  }
+
+  // Age filter
+  if (ageFilter.value !== 'all') {
+    results = results.filter((r) => {
+      const age = calculateAgeAtExam(r.student.birth_day, r.created_at);
+      if (ageFilter.value === '16below') return age <= 16;
+      if (ageFilter.value === '17') return age === 17;
+      if (ageFilter.value === '18above') return age >= 18;
+      return true;
+    });
+  }
+
+  // Course filter
+  if (courseFilter.value !== 'all') {
+    results = results.filter((r) => r.student.course === courseFilter.value);
+  }
+
+  // Sorting
+  if (sortKey.value) {
+    results = [...results].sort((a, b) => {
+      let valA: string | number = '';
+      let valB: string | number = '';
+
+      switch (sortKey.value) {
+        case 'name':
+          valA = `${a.student.last_name} ${a.student.first_name}`.toLowerCase();
+          valB = `${b.student.last_name} ${b.student.first_name}`.toLowerCase();
+          break;
+        case 'course':
+          valA = a.student.course.toLowerCase();
+          valB = b.student.course.toLowerCase();
+          break;
+        default:
+          // direct property match
+          valA = (a as any)[sortKey.value] ?? (a.student as any)[sortKey.value] ?? '';
+          valB = (b as any)[sortKey.value] ?? (b.student as any)[sortKey.value] ?? '';
+      }
+
+      // Normalize strings
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  return results;
 });
+
+
+const uniqueCourses = computed(() => {
+  const courses = result.value.map((r) => r.student.course);
+  return Array.from(new Set(courses));
+});
+
+function calculateAgeAtExam(birthDay: string, examDate: string): number {
+  const birthDate = new Date(birthDay);
+  const exam = new Date(examDate);
+
+  let age = exam.getFullYear() - birthDate.getFullYear();
+  const m = exam.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && exam.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
 
 /* ---------------------- Lifecycle ---------------------- */
 onMounted(fetchResult);

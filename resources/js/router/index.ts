@@ -18,6 +18,14 @@ import Trial from '@/Pages/Exam/Trial.vue';
 import Actual from '@/Pages/Exam/Actual.vue';
 import Result from '@/Pages/Exam/Result.vue';
 
+import Setup from '@/Pages/Admin/Setup.vue';
+import Settings from '@/Pages/Admin/Settings.vue';
+import ViewEnrolledStudent from '@/Pages/Admin/ViewEnrolledStudent.vue';
+
+import api from '@/Api/Axios';
+
+import { useAuthStore } from '@/stores/useAuthStore';
+
 // --- Extend Vue Router Meta --- //
 declare module 'vue-router' {
   interface RouteMeta {
@@ -125,6 +133,26 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
 
+    {
+    path: '/enrolled-students/:id',
+    name: 'ViewEnrolledStudent',
+    component: ViewEnrolledStudent,
+    meta: { title: `ViewEnrolledStudent - ${appName}`, requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    meta: { title: `Settings: ${appName}`, requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/setup',
+    name: 'setup',
+    component: Setup,
+  },
+
   // --- Optional 404 Page --- //
   // {
   //   path: '/:pathMatch(.*)*',
@@ -140,21 +168,18 @@ const router = createRouter({
 });
 
 // --- Navigation Guards --- //
-router.beforeEach((to, from, next) => {
+// --- Navigation Guards --- //
+
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore();
   const routeName = to.name?.toString() || '';
 
   // --- Exam Access Guard --- //
   const examProtectedRoutes = ['exam-information-form', 'exam-trial', 'exam'];
   if (examProtectedRoutes.includes(routeName)) {
-    let studentData: Record<string, any> | null = null;
+    auth.loadStudentData();
 
-    try {
-      studentData = JSON.parse(localStorage.getItem('studentData') || 'null');
-    } catch (error) {
-      studentData = null;
-    }
-
-    if (!studentData || Object.keys(studentData).length === 0) {
+    if (!auth.hasStudentData()) {
       localStorage.setItem('redirectReason', 'Please verify first.');
       return next({ name: 'exam-verify' });
     }
@@ -165,8 +190,17 @@ router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      // Redirect to login if token doesn't exist
       return next({ name: 'Login' });
+    }
+
+    const settings = await auth.fetchSettings(token);
+
+    if (!settings?.setup_complete && to.name !== 'setup') {
+      return next({ name: 'setup' });
+    }
+
+    if (settings?.setup_complete && to.name === 'setup') {
+      return next({ name: 'Dashboard' });
     }
   }
 

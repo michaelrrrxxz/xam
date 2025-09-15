@@ -15,7 +15,7 @@ public function store(VerifyRequest $request)
 {
     $validated = $request->validated();
 
-    // Find student
+
     $student = EnrolledStudent::where('id_number', $validated['id_number'])->first();
     if (!$student) {
         return response()->json([
@@ -23,7 +23,7 @@ public function store(VerifyRequest $request)
         ], 404);
     }
 
-    // Get active batch
+
     $activeBatch = Batch::where('isLocked', false)->first();
     if (!$activeBatch) {
         return response()->json([
@@ -31,7 +31,7 @@ public function store(VerifyRequest $request)
         ], 404);
     }
 
-    // Validate access key
+
     $submittedKey = strtolower(trim($validated['access_key']));
     $storedKey    = strtolower(trim($activeBatch->access_key));
 
@@ -41,13 +41,13 @@ public function store(VerifyRequest $request)
         ], 403);
     }
 
-    // ✅ Check attempts from results table
+
     $examAttempts = Result::where('student_id', $student->id)
         ->where('batch_id', $activeBatch->id)
         ->count();
 
     if ($examAttempts >= 1) {
-        // If admin credentials are provided → validate them
+
         if (!empty($request->admin_email) && !empty($request->admin_password)) {
             $admin = \App\Models\User::where('email', $request->admin_email)->first();
 
@@ -57,9 +57,9 @@ public function store(VerifyRequest $request)
                 ], 401);
             }
 
-            // ✅ Admin validated → allow student to continue
+
         } else {
-            // No admin credentials → reject
+          
             return response()->json([
                 'message' => 'Student already took the exam. Admin credentials required to continue.',
             ], 403);

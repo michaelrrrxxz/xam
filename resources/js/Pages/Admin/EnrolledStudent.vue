@@ -36,13 +36,24 @@ import {
 } from '@/components/ui/drawer';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 
-import { Pencil, Trash, Ellipsis, BadgeQuestionMark, Plus } from 'lucide-vue-next';
+import { Pencil, Trash, Ellipsis, BadgeQuestionMark, Plus, Eye } from 'lucide-vue-next';
+
 import AppLayout from '@/layouts/AppLayout.vue';
 import EnrolledStudentForm from '@/components/EnrolledStudentForm.vue';
 import UploadForm from '@/components/UploadForm.vue';
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
 
 import { useRouter } from 'vue-router';
 
@@ -94,6 +105,16 @@ const toggleMode = (val: boolean) => {
   resetForm();
 };
 
+const courseFilter = ref<EnrolledStudent['course'] | 'all'>('all');
+const genderFilter = ref<'all' | 'male' | 'female'>('all');
+
+
+// Computed property for unique courses
+const uniqueCourses = computed(() => {
+  const courses = enrolledStudents.value.map((e) => e.course);
+  return Array.from(new Set(courses));
+});
+
 // Unified form state
 const form = reactive<{
   id: number | null;
@@ -144,8 +165,13 @@ const openEditModal = async (id: number) => {
   const enrolledStudent = response.data;
   if (enrolledStudent) {
     form.id = enrolledStudent.id;
+    form.last_name = enrolledStudent.last_name;
+    form.first_name = enrolledStudent.first_name;
+    form.middle_name = enrolledStudent.middle_name;
     form.id_number = enrolledStudent.id_number;
     form.course = enrolledStudent.course;
+    form.birth_day = enrolledStudent.birth_day;
+    form.gender = enrolledStudent.gender;
     isEditOpen.value = true;
   }
 };
@@ -155,10 +181,6 @@ const resetForm = () => {
   form.id = null;
   form.id_number = '';
   form.course = '';
-};
-
-const openQuestionsPage = (id: number) => {
-  router.push(`/questions/${id}`);
 };
 
 // Save EnrolledStudent (Add or Update)
@@ -171,6 +193,11 @@ const saveEnrolledStudent = async () => {
       await api.put(`admin/enrolledStudent/${form.id}`, {
         id_number: form.id_number,
         course: form.course,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        middle_name: form.middle_name,
+        birth_day: form.birth_day,
+        gender: form.gender,
       });
       toast.success('EnrolledStudent updated successfully!');
     } else {
@@ -224,6 +251,10 @@ const uploadEnrolledStudent = async (formData: FormData) => {
   }
 };
 
+const viewEnrolledStudent = (id: number) => {
+  router.push({ name: 'ViewEnrolledStudent', params: { id } });
+};
+
 // Delete EnrolledStudent
 const deleteEnrolledStudent = async (id: number) => {
   toast('Are you sure?', {
@@ -254,13 +285,27 @@ const toggleSort = (key: typeof sortKey.value) => {
 };
 
 const filteredEnrolledStudents = computed(() => {
-  // start with search filtering
+  // start with all
   let data = enrolledStudents.value;
+
+  // search filter
   if (searchQuery.value) {
-    data = data.filter((e) => e.id_number.toLowerCase().includes(searchQuery.value.toLowerCase()));
+    data = data.filter((e) =>
+      e.id_number.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
   }
 
-  // then sort
+  // course filter
+  if (courseFilter.value !== 'all') {
+    data = data.filter((e) => e.course === courseFilter.value);
+  }
+
+  // gender filter
+  if (genderFilter.value !== 'all') {
+    data = data.filter((e) => e.gender.toLowerCase() === genderFilter.value);
+  }
+
+  // sorting
   return [...data].sort((a, b) => {
     let valA = '';
     let valB = '';
@@ -282,41 +327,73 @@ const filteredEnrolledStudents = computed(() => {
   });
 });
 
+
 // Fetch enrolledStudents on mount
 onMounted(fetchEnrolledStudents);
 </script>
 <template>
   <AppLayout>
     <section class="flex flex-col md:p-6">
-      <div class="flex items-center justify-between gap-4 p-4 border-b bg-card rounded-t-lg">
-        <!-- Left: Title -->
-        <!-- <h2 class="text-2xl font-bold text-foreground">EnrolledStudents</h2> -->
+    <div class="flex flex-col gap-4 p-4 border-b bg-card rounded-t-lg md:flex-row md:items-center md:justify-between">
+  <!-- Left: Title -->
+  <h2 class="text-lg font-semibold text-foreground">Enrolled Students</h2>
 
-        <!-- Center: Search -->
-        <div class="flex-1 max-w-sm">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search enrolledStudents..."
-            class="w-full px-3 py-2 text-sm border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-        <div class="flex items-center gap-3">
-          <!-- Right: Add EnrolledStudent Button -->
-          <span class="text-sm">Form</span>
-          <Switch :model-value="isUploadMode" @update:model-value="toggleMode" />
-          <span class="text-sm">Upload</span>
-          <Button
-            size="sm"
-            variant="secondary"
-            class="flex items-center gap-2"
-            @click="isUploadMode ? openUploadModal() : openModal()"
-          >
-            <Plus class="w-4 h-4" />
-            {{ isUploadMode ? 'Upload Students' : 'Add Student' }}
-          </Button>
-        </div>
-      </div>
+  <!-- Center: Search + Filters -->
+  <div class="flex flex-1 flex-wrap items-center gap-3 md:justify-center">
+    <!-- Search -->
+    <div class="w-full md:w-64">
+      <Input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search by name or ID..."
+        class="w-full"
+      />
+    </div>
+
+    <!-- Course Filter -->
+    <Select v-model="courseFilter">
+      <SelectTrigger class="w-[180px]">
+        <SelectValue placeholder="Filter by course" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="all">All Courses</SelectItem>
+          <SelectItem v-for="course in uniqueCourses" :key="course" :value="course">
+            {{ course }}
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+    <!-- Gender Filter -->
+    <Select v-model="genderFilter">
+      <SelectTrigger class="w-[160px]">
+        <SelectValue placeholder="Filter by gender" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="all">All Genders</SelectItem>
+          <SelectItem value="male">Male</SelectItem>
+          <SelectItem value="female">Female</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="flex items-center gap-3">
+    <Button size="sm" variant="secondary" class="flex items-center gap-2" @click="openModal">
+      <Plus class="w-4 h-4" />
+      Add Student
+    </Button>
+
+    <Button size="sm" variant="secondary" class="flex items-center gap-2" @click="openUploadModal">
+      <Plus class="w-4 h-4" />
+      Upload Students
+    </Button>
+  </div>
+</div>
+
       <div class="w-full overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
@@ -333,6 +410,7 @@ onMounted(fetchEnrolledStudents);
                   {{ sortOrder === 'asc' ? '↑' : '↓' }}
                 </span>
               </TableHead>
+              <TableHead>Gender</TableHead>
               <TableHead>Course</TableHead>
               <TableHead></TableHead>
             </TableRow>
@@ -343,6 +421,7 @@ onMounted(fetchEnrolledStudents);
               <TableRow v-for="n in 1" :key="n">
                 <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-10 rounded" /></TableCell>
               </TableRow>
@@ -351,6 +430,7 @@ onMounted(fetchEnrolledStudents);
               <TableRow v-for="e in filteredEnrolledStudents" :key="e.id">
                 <TableCell>{{ e.id_number }}</TableCell>
                 <TableCell>{{ e.last_name }}, {{ e.first_name }} {{ e.middle_name }}</TableCell>
+                <TableCell>{{ e.gender }}</TableCell>
                 <TableCell>{{ e.course }}</TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -360,22 +440,28 @@ onMounted(fetchEnrolledStudents);
                       </Button>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
+                 <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
 
-                      <DropdownMenuItem @click="openQuestionsPage(e.id)" m>
-                        <BadgeQuestionMark class="w-4 h-4 mr-2" /> Questions
-                      </DropdownMenuItem>
+                    <!-- View -->
+                    <DropdownMenuItem @click="viewEnrolledStudent(e.id)">
+                        <Eye class="w-4 h-4 mr-2 text-muted-foreground" /> View
+                    </DropdownMenuItem>
 
-                      <DropdownMenuItem @click="openEditModal(e.id)">
-                        <Pencil class="w-4 h-4 mr-2" /> Edit
-                      </DropdownMenuItem>
+                    <!-- Edit -->
+                    <DropdownMenuItem @click="openEditModal(e.id)">
+                        <Pencil class="w-4 h-4 mr-2 text-muted-foreground" /> Edit
+                    </DropdownMenuItem>
 
-                      <DropdownMenuItem @click="deleteEnrolledStudent(e.id)" class="text-red-500">
+                    <DropdownMenuSeparator />
+
+                    <!-- Delete -->
+                    <DropdownMenuItem @click="deleteEnrolledStudent(e.id)" class="text-red-600 focus:text-red-600">
                         <Trash class="w-4 h-4 mr-2" /> Delete
-                      </DropdownMenuItem>
+                    </DropdownMenuItem>
                     </DropdownMenuContent>
+
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
@@ -409,9 +495,10 @@ onMounted(fetchEnrolledStudents);
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Enrolled Student</DialogTitle>
-            <DialogDescription
-              >Fill out the form to create a new enrolledStudent.</DialogDescription
-            >
+            <DialogDescription>
+  Please upload a file in <span class="font-medium">Excel (.xlsx)</span> or <span class="font-medium">CSV (.csv)</span> format.
+</DialogDescription>
+            
           </DialogHeader>
           <!-- reuse your form -->
 
@@ -441,9 +528,9 @@ onMounted(fetchEnrolledStudents);
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>Add EnrolledStudent</DrawerTitle>
-            <DrawerDescription
-              >Fill out the form to create a new enrolledStudent.</DrawerDescription
-            >
+           <DialogDescription>
+  Please upload a file in <span class="font-medium">Excel (.xlsx)</span> or <span class="font-medium">CSV (.csv)</span> format.
+</DialogDescription>
           </DrawerHeader>
           <!-- reuse the same form -->
           <UploadForm :errors="errors" :isSaving="isSaving" @save="uploadEnrolledStudent" />

@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { useColorMode } from '@vueuse/core';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-vue-next';
+import { ArrowRight, LogIn } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'vue-router';
 
+import Logo from '@/components/Logo.vue';
 const mode = useColorMode();
 const router = useRouter();
 
 const goToExam = () => {
-  console.log(router);
   router.push({ name: 'exam-verify' });
+};
+const goToLogin = () => {
+  router.push({ name: 'Login' });
 };
 localStorage.removeItem('studentData');
 </script>
@@ -19,6 +22,7 @@ localStorage.removeItem('studentData');
   <div class="min-h-screen flex flex-col bg-background">
     <!-- Hero Section -->
     <section class="container mx-auto py-20 md:py-32 px-6">
+      <Logo />
       <div class="flex flex-col items-center text-center space-y-8">
         <!-- Badge -->
         <Badge variant="outline" class="text-sm py-2">
@@ -48,9 +52,9 @@ localStorage.removeItem('studentData');
             <ArrowRight class="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
           </Button>
 
-          <!-- GitHub or Info Button -->
-          <Button as-child variant="secondary" class="font-bold w-60">
-            <a href="https://example.com/exam-guidelines" target="_blank"> View Guidelines </a>
+          <Button @click="goToLogin" variant="secondary" class="font-bold w-60 group/arrow">
+            Login
+            <LogIn class="size-5 ml-2 group-hover/arrow:translate-x-2 transition-transform" />
           </Button>
         </div>
       </div>
