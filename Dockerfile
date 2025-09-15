@@ -2,7 +2,7 @@
 FROM node:18 AS frontend
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --no-audit --no-optional
 COPY . .
 RUN npm run build
 
@@ -23,7 +23,7 @@ WORKDIR /var/www
 COPY . .
 
 # Copy built frontend from Stage 1
-COPY --from=frontend /app/public/dist ./public/dist
+COPY --from=frontend /app/dist ./public/dist
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
