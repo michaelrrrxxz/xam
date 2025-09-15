@@ -10,10 +10,23 @@ FROM php:8.2-fpm
 
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
-    git curl unzip libonig-dev libzip-dev zip sqlite3 \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip pdo_sqlite
+    git \
+    curl \
+    unzip \
+    libonig-dev \
+    libzip-dev \
+    zip \
+    sqlite3 \
+    libsqlite3-dev \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        mbstring \
+        zip \
+        pdo_sqlite \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -21,7 +34,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy app files
 COPY . .
 
-# Copy node_modules if needed (optional, skip build for testing)
+# Copy node_modules if needed
 COPY --from=frontend /app/node_modules ./node_modules
 
 # Install PHP dependencies
@@ -34,7 +47,7 @@ RUN php artisan config:clear && \
     php artisan cache:clear && \
     php artisan migrate:fresh --seed
 
-# Expose port if needed
+# Expose port
 EXPOSE 9000
 
 CMD ["php-fpm"]
