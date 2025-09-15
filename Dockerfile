@@ -68,8 +68,7 @@ USER root
 RUN php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear && \
-    php artisan cache:clear && \
-    php artisan migrate:fresh --seed
+    php artisan cache:clear
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
