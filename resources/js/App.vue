@@ -11,10 +11,12 @@ const user = useUserStore();
 
 onMounted(async () => {
   if (!user.name) {
-    // fetch only if user is not loaded
     await user.fetchUser();
   }
 });
 
-const mode = useColorMode();
+const mode = useColorMode({
+  initialValue: 'light',
+  storageKey: 'vueuse-color-scheme',
+});
 </script>

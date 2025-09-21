@@ -41,7 +41,7 @@
           </SelectContent>
         </Select>
 
-        <!-- Refresh Button -->
+        <!-- Add Button -->
         <Button @click="fetchResult" size="sm" variant="secondary" class="flex items-center gap-2">
           Refresh
         </Button>
@@ -260,7 +260,9 @@
               </TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
+            <!-- Loading State -->
             <template v-if="isLoading">
               <TableRow v-for="n in 3" :key="n">
                 <TableCell><Skeleton class="h-4 w-16 rounded" /></TableCell>
@@ -286,13 +288,17 @@
               </TableRow>
             </template>
 
+            <!-- Loaded State -->
             <template v-else>
-              <TableRow v-for="r in finalResults" :key="r.id">
+              <TableRow v-for="r in filteredResults" :key="r.id">
+                <!-- <TableCell>
+                  {{ calculateAgeAtExam(r.student.birth_day, r.created_at) }}
+                </TableCell> -->
+
                 <TableCell>{{ r.student.id_number }}</TableCell>
-                <TableCell
-                  >{{ r.student.last_name }}, {{ r.student.first_name }}
-                  {{ r.student.middle_name }}</TableCell
-                >
+                <TableCell>
+                  {{ r.student.last_name }}, {{ r.student.first_name }} {{ r.student.middle_name }}
+                </TableCell>
                 <TableCell>{{ r.student.course }}</TableCell>
                 <TableCell>{{ r.total_score }}</TableCell>
                 <TableCell>{{ r.sai_t }}</TableCell>
@@ -314,11 +320,12 @@
                   <Button @click="print(r.id)" class="flex items-center gap-2">
                     <Printer class="w-4 h-4" />
                     Print
-                  </Button>
-                </TableCell>
+                  </Button></TableCell
+                >
               </TableRow>
 
-              <TableRow v-if="!finalResults.length">
+              <!-- No Data -->
+              <TableRow v-if="!filteredResults.length">
                 <TableCell colspan="20" class="text-center py-4 text-muted">
                   No data available.
                 </TableCell>
@@ -332,9 +339,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useResults } from '@/composables/result/useResult';
-import { useFilters } from '@/composables/result/useFilters';
-import { useSorting } from '@/composables/result/useSorting';
+import { ref, onMounted, computed } from 'vue';
+import api from '@/Api/Axios';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -356,20 +362,186 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Printer } from 'lucide-vue-next';
+import dayjs from 'dayjs';
+/* ---------------------- Types ---------------------- */
+interface Student {
+  id: number;
+  id_number: string;
+  last_name: string;
+  first_name: string;
+  middle_name: string;
+  birth_day: string;
+  course: string;
+  gender: string;
+}
 
-// Fetch state
-const { result, isLoading, fetchResult } = useResults();
+interface Batch {
+  id: number;
+  name: string;
+}
 
-// Filters
-const { searchQuery, ageFilter, courseFilter, filteredResults, uniqueCourses } = useFilters(
-  () => result.value
-);
+interface Result {
+  // Student Information
+  student: Student;
+  batch: Batch;
+  id: number;
 
-// Sorting
-const { sortKey, sortOrder, toggleSort, sortedResults } = useSorting(() => filteredResults.value);
+  total_score: number;
+  sai_t: number;
+  pba_pr_t: number;
+  pba_s_t: number;
+  pbg_pr_t: number;
+  pbg_s_t: number;
+  verbal: number;
+  non_verbal: number;
 
-// Final list
-const finalResults = sortedResults;
+  verbal_comprehension: number;
+  verbal_comprehension_category: string;
 
-const print = (id: number) => window.open(`/results/${id}/print`, '_blank');
+  verbal_reasoning: number;
+  verbal_reasoning_category: string;
+
+  quantitative_reasoning: number;
+  quantitative_reasoning_category: string;
+
+  figural_reasoning: number;
+  figural_reasoning_category: string;
+  created_at: string;
+}
+
+/* ---------------------- State ---------------------- */
+const result = ref<Result[]>([]);
+const searchQuery = ref('');
+const isLoading = ref(true);
+const ageFilter = ref<'all' | '16below' | '17' | '18above'>('all');
+const courseFilter = ref<Student['course'] | 'all'>('all');
+const sortKey = ref<string>(''); // empty = no sorting
+const sortOrder = ref<'asc' | 'desc'>('asc');
+
+const toggleSort = (key: string) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortOrder.value = 'asc';
+  }
+};
+
+/* ---------------------- Fetch Data ---------------------- */
+const fetchResult = async () => {
+  isLoading.value = true;
+  try {
+    const response = await api.get('/admin/result');
+    result.value = response.data;
+  } catch (error) {
+    console.warn('Error fetching results:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const print = async (id: number) => {
+  window.open(`/results/${id}/print`, '_blank');
+};
+
+/* ---------------------- Computed ---------------------- */
+const filteredResults = computed(() => {
+  let results = result.value;
+
+  // Search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    results = results.filter(
+      (r) =>
+        `${r.student.last_name} ${r.student.first_name} ${r.student.middle_name}`
+          .toLowerCase()
+          .includes(query) || r.student.id_number.toLowerCase().includes(query)
+    );
+  }
+
+  // Age filter
+  if (ageFilter.value !== 'all') {
+    results = results.filter((r) => {
+      const age = calculateAgeAtExam(r.student.birth_day, r.created_at);
+      if (ageFilter.value === '16below') return age <= 16;
+      if (ageFilter.value === '17') return age === 17;
+      if (ageFilter.value === '18above') return age >= 18;
+      return true;
+    });
+  }
+
+  // Course filter
+  if (courseFilter.value !== 'all') {
+    results = results.filter((r) => r.student.course === courseFilter.value);
+  }
+
+  // Sorting
+  if (sortKey.value) {
+    results = [...results].sort((a, b) => {
+      let valA: string | number = '';
+      let valB: string | number = '';
+
+      switch (sortKey.value) {
+        case 'name':
+          valA = `${a.student.last_name} ${a.student.first_name}`.toLowerCase();
+          valB = `${b.student.last_name} ${b.student.first_name}`.toLowerCase();
+          break;
+        case 'course':
+          valA = a.student.course.toLowerCase();
+          valB = b.student.course.toLowerCase();
+          break;
+        default:
+          // direct property match
+          valA = (a as any)[sortKey.value] ?? (a.student as any)[sortKey.value] ?? '';
+          valB = (b as any)[sortKey.value] ?? (b.student as any)[sortKey.value] ?? '';
+      }
+
+      // Normalize strings
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  return results;
+});
+
+const uniqueCourses = computed(() => {
+  const courses = result.value.map((r) => r.student.course);
+  return Array.from(new Set(courses));
+});
+
+function calculateAgeAtExam(birthDay: string, examDate: string): number {
+  const birthDate = new Date(birthDay);
+  const exam = new Date(examDate);
+
+  let age = exam.getFullYear() - birthDate.getFullYear();
+  const m = exam.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && exam.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+/* ---------------------- Lifecycle ---------------------- */
+onMounted(fetchResult);
 </script>
+
+<style scoped>
+/* Smooth pulsing animation for placeholders */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+</style>

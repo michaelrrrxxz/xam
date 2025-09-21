@@ -43,62 +43,19 @@ import { Pencil, Trash, Ellipsis, Plus } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
 import QuestionTextForm from '@/components/forms/QuestionTextForm.vue';
 import QuestionImageForm from '@/components/forms/QuestionImageForm.vue';
-const formData = new FormData();
-import { useRouter } from 'vue-router';
-const router = useRouter();
+
+import type { Question } from '@/src/types';
+
+const question = ref<Question[]>([]);
 const isLoading = ref(true);
-interface UploadableField {
-  file: File | null;
-  preview: string | null;
-}
 
-// NOTE: question and choices can be either string (text / stored URL) or UploadableField
-export interface Question {
-  id: number;
-  test_type: string;
-
-  // Question
-  question: string | null; // for text format
-  question_image: UploadableField | null; // for photo format
-
-  // Choices
-  ch1: string | null;
-  ch1_image: UploadableField | null;
-
-  ch2: string | null;
-  ch2_image: UploadableField | null;
-
-  ch3: string | null;
-  ch3_image: UploadableField | null;
-
-  ch4: string | null;
-  ch4_image: UploadableField | null;
-
-  ch5: string | null;
-  ch5_image: UploadableField | null;
-
-  answer: 'ch1' | 'ch2' | 'ch3' | 'ch4' | 'ch5';
-
-  qtype:
-    | 'verbal reasoning'
-    | 'verbal comprehension'
-    | 'quantitative reasoning'
-    | 'figural reasoning';
-
-  format: 'text' | 'photo';
-}
-
-// Reactive States
-const question = ref<Question[]>([]); // list of questions
 const isOpen = ref(false);
-const isFormChoicesOpen = ref(false);
 const isEditOpen = ref(false);
 const isSaving = ref(false);
 const errors = ref<Record<string, string>>({});
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const searchQuery = ref('');
 
-// mode switch
 const isImageMode = ref(false);
 const toggleMode = (val: boolean) => {
   isImageMode.value = val;
@@ -110,8 +67,8 @@ const toggleMode = (val: boolean) => {
 const form = reactive<Question>({
   id: null,
   test_type: '',
-  question: '', // text mode by default
-  question_image: null, // image mode fallback
+  question: '', // default text
+  question_image: null,
   ch1: '',
   ch1_image: null,
   ch2: '',
@@ -123,18 +80,15 @@ const form = reactive<Question>({
   ch5: '',
   ch5_image: null,
   answer: 'ch1',
-  qtype: 'verbal reasoning',
+  qtype: '',
   format: 'text',
 });
 
 // ---------- Helpers ----------
-const isUploadable = (v: any): v is UploadableField => v && typeof v === 'object' && 'preview' in v;
-
 const isLikelyImageString = (s: any) => {
   if (typeof s !== 'string') return false;
   if (s.startsWith('data:')) return true;
   if (/\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(s)) return true;
-  // If it's an absolute http(s) URL it's probably an image for your app usage
   if (/^https?:\/\//i.test(s)) return true;
   return false;
 };
@@ -151,7 +105,6 @@ const fetchQuestion = async () => {
     isLoading.value = false;
   }
 };
-
 onMounted(fetchQuestion);
 
 const openModal = () => {
@@ -160,31 +113,28 @@ const openModal = () => {
   isOpen.value = true;
 };
 
-// Open Edit Modal and auto-detect image/text mode
+// const normalize = (val: any) => {
+//   if (!val) return null;
+//   if (typeof val === 'string') {
+//     return val.startsWith('http') ? val : `/storage/${val}`;
+//   }
+//   return val;
+// };
+
+const extractSrc = (html: string | null): string | null => {
+  if (!html) return null;
+  const match = html.match(/src=["']?([^"'>]+)["']?/);
+  return match ? `/${match[1]}` : null; // prepend / for correct path
+};
+
 const openEditModal = async (id: number) => {
   try {
     const response = await api.get(`admin/question/${id}`);
     const q = response.data as any;
 
-    // Helper: normalize DB path to full URL
-    const normalize = (val: any) => {
-      if (!val) return null;
-      if (typeof val === 'string') {
-        return val.startsWith('http') ? val : `/storage/${val}`;
-      }
-      return val;
-    };
-
-    form.question_image = { file: null, preview: normalize(q.question) };
-
-    // Detect if this question is an image (by checking extension or preview field)
-    const qIsImage =
-      isLikelyImageString(q.question) ||
-      (q.question && typeof q.question === 'object' && 'preview' in q.question);
-
+    const qIsImage = q.format === 'photo';
     isImageMode.value = qIsImage;
 
-    // Map common fields
     form.id = q.id ?? null;
     form.test_type = q.test_type ?? '';
     form.answer = q.answer ?? 'ch1';
@@ -192,7 +142,8 @@ const openEditModal = async (id: number) => {
     form.format = q.format ?? (qIsImage ? 'photo' : 'text');
 
     if (qIsImage) {
-      // Image mode → convert DB paths to preview objects
+      const normalize = (val: any) => (val ? extractSrc(val) : null);
+
       form.question_image = { file: null, preview: normalize(q.question) };
       form.ch1_image = { file: null, preview: normalize(q.ch1) };
       form.ch2_image = { file: null, preview: normalize(q.ch2) };
@@ -200,13 +151,27 @@ const openEditModal = async (id: number) => {
       form.ch4_image = { file: null, preview: normalize(q.ch4) };
       form.ch5_image = { file: null, preview: normalize(q.ch5) };
 
-      // Text mode
+      // Clear text fields
+      form.question = '';
+      form.ch1 = '';
+      form.ch2 = '';
+      form.ch3 = '';
+      form.ch4 = '';
+      form.ch5 = '';
+    } else {
       form.question = q.question ?? '';
       form.ch1 = q.ch1 ?? '';
       form.ch2 = q.ch2 ?? '';
       form.ch3 = q.ch3 ?? '';
       form.ch4 = q.ch4 ?? '';
       form.ch5 = q.ch5 ?? '';
+
+      form.question_image = null;
+      form.ch1_image = null;
+      form.ch2_image = null;
+      form.ch3_image = null;
+      form.ch4_image = null;
+      form.ch5_image = null;
     }
 
     isEditOpen.value = true;
@@ -224,7 +189,6 @@ const resetForm = () => {
   form.answer = 'ch1';
 
   if (isImageMode.value) {
-    // Reset image fields properly
     form.question_image = { file: null, preview: null };
     form.ch1_image = { file: null, preview: null };
     form.ch2_image = { file: null, preview: null };
@@ -232,15 +196,13 @@ const resetForm = () => {
     form.ch4_image = { file: null, preview: null };
     form.ch5_image = { file: null, preview: null };
 
-    // Also clear text fields in image mode (to avoid stale values)
-    form.question = null;
-    form.ch1 = null;
-    form.ch2 = null;
-    form.ch3 = null;
-    form.ch4 = null;
-    form.ch5 = null;
+    form.question = '';
+    form.ch1 = '';
+    form.ch2 = '';
+    form.ch3 = '';
+    form.ch4 = '';
+    form.ch5 = '';
   } else {
-    // Reset text fields
     form.question = '';
     form.ch1 = '';
     form.ch2 = '';
@@ -248,7 +210,6 @@ const resetForm = () => {
     form.ch4 = '';
     form.ch5 = '';
 
-    // Clear image fields
     form.question_image = null;
     form.ch1_image = null;
     form.ch2_image = null;
@@ -258,88 +219,58 @@ const resetForm = () => {
   }
 };
 
-// File upload handler (works with unified form)
-const handleFileUpload = (e: Event, field: keyof Question) => {
-  const target = e.target as HTMLInputElement;
-  const files = target.files;
-  if (files && files[0]) {
-    const f = files[0];
-    // assign UploadableField
-    (form as any)[field] = {
-      file: f,
-      preview: URL.createObjectURL(f),
-    } as UploadableField;
-  }
-};
-
-// Save (create or update) — auto chooses JSON or FormData
 const saveQuestion = async () => {
   errors.value = {};
   isSaving.value = true;
 
   try {
-    const fields = isImageMode.value
-      ? [
-          'question_image',
-          'ch1_image',
-          'ch2_image',
-          'ch3_image',
-          'ch4_image',
-          'ch5_image',
-          'format',
-        ]
-      : ['question', 'ch1', 'ch2', 'ch3', 'ch4', 'ch5', 'format'];
-
-    const isMultipart = fields.some((f) => {
-      const v = (form as any)[f];
-      return !!(v && typeof v === 'object' && v.file instanceof File);
-    });
-
-    if (isMultipart) {
+    if (isImageMode.value) {
       const fd = new FormData();
+
+      const fields = [
+        'question_image',
+        'ch1_image',
+        'ch2_image',
+        'ch3_image',
+        'ch4_image',
+        'ch5_image',
+      ];
       fields.forEach((f) => {
         const v = (form as any)[f];
-        if (v && typeof v === 'object' && v.file) {
+        if (v && v.file) {
           fd.append(f, v.file);
-        } else {
-          // if preview exists but no file (editing existing image url), send preview as existing url
-          if (v && typeof v === 'object' && v.preview) {
-            fd.append(f, v.preview as string);
-          } else {
-            fd.append(f, typeof v === 'string' ? v : '');
-          }
+        } else if (v && v.preview) {
+          fd.append(f, v.preview);
         }
       });
 
       fd.append('test_type', form.test_type ?? '');
       fd.append('answer', form.answer ?? 'ch1');
       fd.append('qtype', form.qtype ?? '');
+      fd.append('format', 'photo');
 
       if (form.id) {
-        // many backends accept POST + _method=PUT for multipart updates
         fd.append('_method', 'PUT');
         await api.post(`admin/question/${form.id}`, fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        toast.success('Question updated (images)!');
+        toast.success('Question updated (image mode)!');
       } else {
         await api.post('admin/question', fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        toast.success('Question added (images)!');
+        toast.success('Question added (image mode)!');
       }
     } else {
-      // regular JSON payload (text-only)
       const payload = {
-        format: form.format,
-
+        format: 'text',
         test_type: form.test_type,
-        question: typeof form.question === 'string' ? form.question : '',
-        ch1: typeof form.ch1 === 'string' ? form.ch1 : '',
-        ch2: typeof form.ch2 === 'string' ? form.ch2 : '',
-        ch3: typeof form.ch3 === 'string' ? form.ch3 : '',
-        ch4: typeof form.ch4 === 'string' ? form.ch4 : '',
-        ch5: typeof form.ch5 === 'string' ? form.ch5 : '',
+        question: form.question ?? '',
+        ch1: form.ch1 ?? '',
+        ch2: form.ch2 ?? '',
+        ch3: form.ch3 ?? '',
+        ch4: form.ch4 ?? '',
+        ch5: form.ch5 ?? '',
         answer: form.answer,
         qtype: form.qtype,
       };
@@ -356,12 +287,10 @@ const saveQuestion = async () => {
     await fetchQuestion();
     resetForm();
     isOpen.value = false;
-    isFormChoicesOpen.value = false;
     isEditOpen.value = false;
   } catch (err: any) {
     console.warn(err);
     if (err?.response?.data?.errors) {
-      // map backend validation errors (Laravel)
       const backendErrors = err.response.data.errors;
       errors.value = Object.keys(backendErrors).reduce((acc: any, key) => {
         acc[key] = backendErrors[key][0];
@@ -375,17 +304,15 @@ const saveQuestion = async () => {
   }
 };
 
-// Delete
 const deleteQuestion = async (id: number) => {
   toast('Are you sure?', {
-    position: 'top-center',
     description: 'This will permanently delete the question.',
     action: {
       label: 'Confirm',
       onClick: async () => {
         try {
           await api.delete(`admin/question/${id}`);
-          toast.success('Question deleted successfully!');
+          toast.success('Question deleted!');
           await fetchQuestion();
         } catch {
           toast.error('Failed to delete question.');
@@ -395,7 +322,6 @@ const deleteQuestion = async (id: number) => {
   });
 };
 
-// Search-safe computed: get string from question whether text or image preview
 const filteredQuestion = computed(() => {
   if (!searchQuery.value) return question.value;
   return question.value.filter((e) => {
@@ -411,8 +337,8 @@ const filteredQuestion = computed(() => {
 <template>
   <AppLayout>
     <section class="flex flex-col md:p-6">
+      <!-- Header -->
       <div class="flex items-center justify-between gap-4 p-4 border-b bg-card rounded-t-lg">
-        <!-- Search -->
         <div class="flex-1 max-w-sm">
           <input
             v-model="searchQuery"
@@ -422,7 +348,6 @@ const filteredQuestion = computed(() => {
           />
         </div>
 
-        <!-- Mode & Add -->
         <div class="flex items-center gap-3">
           <span class="text-sm">Text</span>
           <Switch :model-value="isImageMode" @update:model-value="toggleMode" />
@@ -435,6 +360,7 @@ const filteredQuestion = computed(() => {
         </div>
       </div>
 
+      <!-- Table -->
       <div class="w-full overflow-x-auto rounded-md border mt-4">
         <Table>
           <TableHeader>
@@ -445,10 +371,9 @@ const filteredQuestion = computed(() => {
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
-
           <TableBody>
             <template v-if="isLoading">
-              <TableRow v-for="n in 72" :key="n">
+              <TableRow v-for="n in 10" :key="n">
                 <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
                 <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
@@ -457,11 +382,21 @@ const filteredQuestion = computed(() => {
             </template>
             <template v-else>
               <TableRow v-for="q in filteredQuestion" :key="q.id">
-                <TableCell class="max-w-xs truncate" v-html="q.question"></TableCell>
+                <TableCell class="max-w-xs">
+                  <div
+                    v-if="typeof q.question === 'string' && q.question"
+                    v-html="q.question"
+                    class="prose max-h-32 overflow-hidden"
+                  />
+                  <div
+                    v-else-if="q.question && typeof q.question === 'object' && q.question.preview"
+                  >
+                    <img :src="q.question.preview" class="max-h-24 object-contain rounded" />
+                  </div>
+                  <div v-else class="text-muted-foreground">No question</div>
+                </TableCell>
 
-                <TableCell>{{
-                  (q.test_type || '').charAt(0).toUpperCase() + (q.test_type || '').slice(1)
-                }}</TableCell>
+                <TableCell>{{ q.test_type || '-' }}</TableCell>
                 <TableCell>
                   {{
                     {
@@ -470,25 +405,20 @@ const filteredQuestion = computed(() => {
                       ch3: 'Choice 3',
                       ch4: 'Choice 4',
                       ch5: 'Choice 5',
-                    }[q.answer] || 'Unknown choice'
+                    }[q.answer] || 'Unknown'
                   }}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger as-child>
-                      <Button variant="ghost" size="sm" class="flex items-center gap-1">
-                        <Ellipsis class="w-4 h-4 mr-2" />
-                      </Button>
+                      <Button variant="ghost" size="sm"><Ellipsis class="w-4 h-4" /></Button>
                     </DropdownMenuTrigger>
-
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-
                       <DropdownMenuItem @click="openEditModal(q.id)">
                         <Pencil class="w-4 h-4 mr-2" /> Edit
                       </DropdownMenuItem>
-
                       <DropdownMenuItem @click="deleteQuestion(q.id)" class="text-red-500">
                         <Trash class="w-4 h-4 mr-2" /> Delete
                       </DropdownMenuItem>
@@ -496,9 +426,8 @@ const filteredQuestion = computed(() => {
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-
               <TableRow v-if="!question.length">
-                <TableCell colspan="4" class="text-center"> No data available. </TableCell>
+                <TableCell colspan="4" class="text-center">No data available.</TableCell>
               </TableRow>
             </template>
           </TableBody>
@@ -515,13 +444,6 @@ const filteredQuestion = computed(() => {
             </DialogDescription>
           </DialogHeader>
 
-          <!-- Toggle -->
-          <div class="flex items-center justify-between py-2">
-            <Label for="mode">Use Image Mode</Label>
-            <Switch :model-value="isImageMode" @update:model-value="toggleMode" />
-          </div>
-
-          <!-- Conditional form -->
           <QuestionTextForm
             v-if="!isImageMode"
             :form="form"
@@ -529,7 +451,6 @@ const filteredQuestion = computed(() => {
             :isSaving="isSaving"
             @save="saveQuestion"
           />
-
           <QuestionImageForm
             v-else
             :form="form"
@@ -545,16 +466,11 @@ const filteredQuestion = computed(() => {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{{ isEditOpen ? 'Edit Question' : 'Add Question' }}</DrawerTitle>
-            <DrawerDescription>Fill out the form to create a new question.</DrawerDescription>
+            <DrawerDescription>
+              Fill out the form to {{ isEditOpen ? 'update' : 'create' }} a question.
+            </DrawerDescription>
           </DrawerHeader>
 
-          <!-- Toggle -->
-          <div class="flex items-center justify-between py-2">
-            <Label for="mode">Use Image Mode</Label>
-            <Switch :model-value="isImageMode" @update:model-value="toggleMode" />
-          </div>
-
-          <!-- Conditional form -->
           <QuestionTextForm
             v-if="!isImageMode"
             :form="form"
@@ -562,7 +478,6 @@ const filteredQuestion = computed(() => {
             :isSaving="isSaving"
             @save="saveQuestion"
           />
-
           <QuestionImageForm
             v-else
             :form="form"

@@ -15,6 +15,7 @@ import {
 import api from '@/Api/Axios';
 import { toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
+import ExamLayout from '@/layouts/ExamLayout.vue';
 
 const router = useRouter();
 
@@ -118,51 +119,44 @@ const submitAdminApproval = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background px-4">
-    <Card class="w-full max-w-md shadow-lg">
-      <CardHeader>
-        <CardTitle class="text-center text-xl font-bold"> Exam Verification </CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <!-- ID Number Input -->
-        <div class="grid gap-2">
-          <Label for="idNumber">ID Number</Label>
-          <Input
-            id="idNumber"
-            v-model="idNumber"
-            placeholder="Enter your ID number"
-            :class="['w-full', errors.id_number ? 'border-red-500 focus:ring-red-500' : '']"
-          />
-          <p v-if="errors.id_number" class="text-red-500 text-sm">
-            {{ errors.id_number }}
-          </p>
-        </div>
+  <ExamLayout>
+    <div class="grid gap-2">
+      <Label for="idNumber">ID Number</Label>
+      <Input
+        id="idNumber"
+        v-model="idNumber"
+        autocomplete="off"
+        placeholder="Enter your ID number"
+        :class="['w-full', errors.id_number ? 'border-red-500 focus:ring-red-500' : '']"
+      />
+      <p v-if="errors.id_number" class="text-red-500 text-sm">
+        {{ errors.id_number }}
+      </p>
+    </div>
 
-        <!-- Access Key Input -->
-        <div class="grid gap-2">
-          <Label for="accessKey">Access Key</Label>
-          <Input
-            id="accessKey"
-            v-model="accessKey"
-            placeholder="Enter your access key"
-            type="password"
-            :class="['w-full', errors.access_key ? 'border-red-500 focus:ring-red-500' : '']"
-          />
-          <p v-if="errors.access_key" class="text-red-500 text-sm">
-            {{ errors.access_key }}
-          </p>
-        </div>
+    <!-- Access Key Input -->
+    <div class="grid gap-2">
+      <Label for="accessKey">Access Key</Label>
+      <Input
+        id="accessKey"
+        v-model="accessKey"
+        placeholder="Enter your access key"
+        type="password"
+        :class="['w-full', errors.access_key ? 'border-red-500 focus:ring-red-500' : '']"
+      />
+      <p v-if="errors.access_key" class="text-red-500 text-sm">
+        {{ errors.access_key }}
+      </p>
+    </div>
 
-        <!-- Submit Button -->
-        <Button
-          class="w-full font-bold mt-4"
-          :disabled="isLoading || !idNumber || !accessKey"
-          @click="verifyStudent"
-        >
-          {{ isLoading ? 'Verifying...' : 'Verify and Continue' }}
-        </Button>
-      </CardContent>
-    </Card>
+    <!-- Submit Button -->
+    <Button
+      class="w-full font-bold mt-4"
+      :disabled="isLoading || !idNumber || !accessKey"
+      @click="verifyStudent"
+    >
+      {{ isLoading ? 'Verifying...' : 'Verify and Continue' }}
+    </Button>
 
     <!-- Admin Approval Modal -->
     <Dialog v-model:open="showAdminDialog">
@@ -196,5 +190,5 @@ const submitAdminApproval = async () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  </div>
+  </ExamLayout>
 </template>

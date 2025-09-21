@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen flex justify-center items-center bg-background p-4">
+  <div class="min-h-screen flex flex-col items-center bg-background p-4 space-y-6">
+    <!-- Top Center Logo -->
+    <Logo class="h-20 w-20" />
     <Card class="w-full max-w-3xl shadow-md p-6">
       <CardHeader class="text-center">
         <CardTitle class="text-2xl font-bold">Exam Results</CardTitle>
@@ -142,49 +144,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import api from '@/Api/Axios';
 import { toast } from 'vue-sonner';
-
-interface Student {
-  id: number;
-  id_number: string;
-  last_name: string;
-  first_name: string;
-  middle_name: string;
-  birth_day: string;
-  course: string;
-  gender: string;
-}
-
-interface Batch {
-  id: number;
-  name: string;
-}
-
-interface Result {
-  id: number;
-  student: Student;
-  batch: Batch;
-  total_score: number;
-  sai_t: number;
-  pba_pr_t: number;
-  pba_s_t: number;
-  pbg_pr_t: number;
-  pbg_s_t: number;
-  verbal: number;
-  non_verbal: number;
-
-  verbal_comprehension: number;
-  verbal_comprehension_category: string;
-  verbal_reasoning: number;
-  verbal_reasoning_category: string;
-  quantitative_reasoning: number;
-  quantitative_reasoning_category: string;
-  figural_reasoning: number;
-  figural_reasoning_category: string;
-
-  total_performance_category: string;
-  verbal_performance_category: string;
-  non_verbal_performance_category: string;
-}
+import Logo from '@/components/Logo.vue';
+import type { Result } from '@/src/types';
 
 const loading = ref(true);
 const result = ref<Result | null>(null);
@@ -202,7 +163,6 @@ onMounted(async () => {
     const student = JSON.parse(storedStudent);
     information.value = storedInformation ? JSON.parse(storedInformation) : null;
     const response = await api.get(`examinee/result/${student.id}`);
-    result.value = response.data.result;
     result.value = response.data.result;
   } catch (error) {
     console.error(error);

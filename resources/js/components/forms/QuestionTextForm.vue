@@ -10,21 +10,43 @@
             <SelectValue placeholder="Select a test type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="verbal">Verbal</SelectItem>
+            <SelectItem value="Verbal">Verbal</SelectItem>
             <SelectItem value="non-verbal">Non-Verbal</SelectItem>
           </SelectContent>
         </Select>
         <p v-if="errors.test_type" class="text-sm text-red-500">{{ errors.test_type }}</p>
       </div>
 
+      <div class="grid gap-2">
+        <Label for="qtype">Question Type</Label>
+        <Select v-model="form.qtype">
+          <SelectTrigger>
+            <SelectValue placeholder="Select question type" />
+          </SelectTrigger>
+          <SelectContent>
+            <template v-if="form.test_type === 'Verbal'">
+              <SelectItem value="Verbal Reasoning">Verbal Reasoning</SelectItem>
+              <SelectItem value="Verbal Comprehension">Verbal Comprehension</SelectItem>
+            </template>
+            <template v-else-if="form.test_type === 'non-verbal'">
+              <SelectItem value="Quantitative Reasoning">Quantitative Reasoning</SelectItem>
+              <SelectItem value="Figural Reasoning">Figural Reasoning</SelectItem>
+            </template>
+          </SelectContent>
+        </Select>
+        <p v-if="errors.qtype" class="text-sm text-red-500">{{ errors.qtype }}</p>
+      </div>
+
       <!-- Question -->
       <div class="grid gap-2">
         <Label for="question">Question</Label>
-        <Textarea
-          id="question"
-          v-model="form.question"
+        <QuillEditor
+          v-model:content="form.question"
+          content-type="html"
+          theme="snow"
+          toolbar="bold italic underline"
           placeholder="Enter your question here..."
-          class="min-h-[100px]"
+          class="min-h-[120px] border rounded"
         />
         <p v-if="errors.question" class="text-sm text-red-500">{{ errors.question }}</p>
       </div>
@@ -32,10 +54,13 @@
       <!-- Choices -->
       <div v-for="choice in choices" :key="choice.key" class="grid gap-2">
         <Label :for="choice.key">Choice {{ choice.index }}</Label>
-        <Input
-          :id="choice.key"
-          v-model="form[choice.key]"
+        <QuillEditor
+          v-model:content="form[choice.key]"
+          content-type="html"
+          theme="snow"
+          toolbar="bold italic underline"
           :placeholder="`Enter choice ${choice.index}`"
+          class="min-h-[80px] border rounded"
         />
       </div>
 
@@ -55,27 +80,9 @@
       </div>
 
       <!-- Question Type -->
-      <div class="grid gap-2">
-        <Label for="qtype">Question Type</Label>
-        <Select v-model="form.qtype">
-          <SelectTrigger>
-            <SelectValue placeholder="Select question type" />
-          </SelectTrigger>
-          <SelectContent>
-            <template v-if="form.test_type === 'verbal'">
-              <SelectItem value="verbal reasoning">Verbal Reasoning</SelectItem>
-              <SelectItem value="verbal comprehension">Verbal Comprehension</SelectItem>
-            </template>
-            <template v-else-if="form.test_type === 'non-verbal'">
-              <SelectItem value="quantitative reasoning">Quantitative Reasoning</SelectItem>
-              <SelectItem value="figural reasoning">Figural Reasoning</SelectItem>
-            </template>
-          </SelectContent>
-        </Select>
-        <p v-if="errors.qtype" class="text-sm text-red-500">{{ errors.qtype }}</p>
-      </div>
     </div>
 
+    <!-- Force text mode -->
     <input type="hidden" v-model="form.format" value="text" />
 
     <!-- Sticky footer button -->
@@ -90,8 +97,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
@@ -102,7 +107,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// ✅ Reusable type for the form
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
 interface QuestionForm {
   id: number | null;
   test_type: string;
@@ -115,7 +122,7 @@ interface QuestionForm {
   answer: string;
   qtype: string;
   [key: `ch${number}`]: string;
-  format: 'text';
+ format: "text" | "photo";
 }
 
 const props = defineProps<{
@@ -126,7 +133,6 @@ const props = defineProps<{
 
 defineEmits(['save']);
 
-// ✅ Build choices list
 const choices = computed(() =>
   Array.from({ length: 5 }, (_, i) => {
     const key = `ch${i + 1}` as const;
@@ -134,6 +140,5 @@ const choices = computed(() =>
   })
 );
 
-// ✅ Only keep non-empty for "Correct Answer"
 const filledChoices = computed(() => choices.value.filter((c) => c.value?.trim() !== ''));
 </script>

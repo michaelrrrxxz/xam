@@ -1,90 +1,107 @@
 <template>
   <div class="min-h-screen bg-background flex justify-center p-4">
     <Card class="w-full max-w-4xl shadow-md">
-      <CardHeader>
-        <CardTitle class="text-xl font-bold text-center">Exam</CardTitle>
+      <!-- Exam Header -->
+      <CardHeader class="flex flex-col items-center space-y-3">
+        <Logo class="h-16 w-16 mx-auto" />
+        <CardTitle class="text-2xl font-bold tracking-wide text-center"> Examination </CardTitle>
       </CardHeader>
 
-      <CardContent>
-        <!-- Timer + Unanswered Tracker -->
-        <div
-          class="sticky top-0 z-50 bg-background border-b mb-6 p-3 flex justify-between items-center"
-        >
-          <!-- Timer -->
-          <div class="w-full max-w-xs">
-            <Label>Time Remaining</Label>
-            <div class="flex items-center gap-2">
-              <Progress :value="progressPercent" :class="progressColor" class="flex-1 h-3" />
-              <span class="font-mono text-sm">{{ formattedTime }}</span>
-            </div>
+      <!-- Sticky Timer & Unanswered Counter -->
+      <div
+        class="sticky top-0 z-50 bg-background border-b mb-6 p-3 flex flex-col sm:flex-row justify-between items-center gap-3"
+      >
+        <!-- Timer -->
+        <div class="w-full max-w-xs">
+          <Label>Time Remaining</Label>
+          <div class="flex items-center gap-2">
+            <Progress :value="progressPercent" :class="progressColor" class="flex-1 h-3" />
+            <span class="font-mono text-sm">{{ formattedTime }}</span>
           </div>
-
-          <!-- Unanswered Counter -->
-          <Button variant="outline" class="ml-4" @click="scrollToNearestUnanswered">
-            {{ unansweredCount }} Unanswered
-          </Button>
         </div>
 
-        <!-- Student Info -->
-        <div
-          v-if="studentData"
-          class="mb-6 p-4 rounded-lg border bg-card shadow-sm text-card-foreground"
-        >
-          <h3 class="font-semibold text-lg mb-2">Student Information</h3>
-          <p><strong>Name:</strong> {{ studentData.name }}</p>
-          <p><strong>ID Number:</strong> {{ studentData.id_number }}</p>
-          <p><strong>Course:</strong> {{ studentData.course }}</p>
-          <p><strong>Gender:</strong> {{ studentData.gender }}</p>
-          <p><strong>School:</strong> {{ schoolData.school }}</p>
-        </div>
+        <!-- Unanswered Counter -->
+        <Button variant="outline" class="ml-0 sm:ml-4" @click="scrollToNearestUnanswered">
+          {{ unansweredCount }} Unanswered
+        </Button>
+      </div>
 
-        <!-- Loading State -->
-        <div v-if="loading" class="text-center text-muted-foreground py-10">
-          Loading questions...
-        </div>
+      <!-- Student Info Card -->
+      <StudentInfoCard :studentData="studentData" :schoolData="schoolData" />
 
-        <!-- Exam Questions -->
+      <!-- Exam Questions -->
+      <CardContent>
         <div>
           <div
             v-for="(question, index) in questions"
             :key="question.id"
             :ref="setQuestionRef(question.id)"
-            class="rounded-xl p-4 shadow-sm mb-4 transition-colors"
-            :class="[
-              'border',
-              answers[question.id]
-                ? 'border-green-500 bg-green-100 dark:bg-green-900'
-                : 'border-border bg-muted',
-            ]"
+            class="rounded-xl p-4 shadow-sm mb-6 border transition-colors"
+            :class="
+              (index + 1) % 2 === 0
+                ? 'bg-yellow-100 border-yellow-400 dark:bg-yellow-900 dark:border-yellow-600'
+                : 'bg-muted border-border dark:bg-muted-dark dark:border-border-dark'
+            "
           >
-            <!-- Question Number -->
-            <h2
-              class="font-semibold text-lg mb-3"
-              v-html="index + 1 + '. ' + question.question"
-            ></h2>
+            <!-- Question Number Badge + Text -->
+            <div class="flex items-center gap-3 mb-3">
+              <div
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg"
+              >
+                {{ index + 1 }}
+              </div>
+              <h2 class="font-semibold text-lg" v-html="question.question"></h2>
+            </div>
 
-            <!-- Choices -->
             <!-- Choices -->
             <div class="space-y-2">
               <label
-                v-for="(choice, key) in getChoices(question)"
-                :key="key"
-                class="flex items-center space-x-2 cursor-pointer"
+                v-for="(choice, choiceIndex) in getChoices(question)"
+                :key="choiceIndex"
+                class="flex items-center space-x-3 cursor-pointer p-3 border rounded-lg transition"
+                :class="
+                  answers[question.id] === choiceIndex
+                    ? 'border-green-500 bg-green-100 dark:bg-green-900'
+                    : 'border-border bg-background dark:border-border-dark dark:bg-background-dark hover:bg-accent dark:hover:bg-accent-dark'
+                "
               >
+                <!-- Choice Letter Badge -->
+                <div
+                  class="w-8 h-8 flex items-center justify-center rounded-full font-bold"
+                  :class="
+                    answers[question.id] === choiceIndex
+                      ? 'bg-green-600 text-white'
+                      : 'bg-primary text-primary-foreground'
+                  "
+                >
+                  {{
+                    (index % 2 === 0 ? ['A', 'B', 'C', 'D', 'E'] : ['F', 'G', 'H', 'I', 'J'])[
+                      choiceIndex
+                    ]
+                  }}
+                </div>
+
+                <!-- Hidden Radio -->
                 <input
                   type="radio"
-                  class="w-4 h-4"
+                  class="sr-only peer"
                   :name="'question-' + question.id"
-                  :value="key"
+                  :value="choiceIndex"
                   v-model="answers[question.id]"
                 />
 
-                <!-- ✅ Render choice -->
-                <span v-if="isImageUrl(choice)">
-                  <img :src="choice" alt="choice image" class="w-20 h-20 object-cover rounded" />
-                </span>
-                <span v-else-if="hasHtml(choice)" v-html="choice"></span>
-                <span v-else>{{ choice }}</span>
+                <!-- Choice Text/Image -->
+                <div class="flex-1">
+                  <span v-if="isImageUrl(choice)">
+                    <img
+                      :src="choice"
+                      alt="choice image"
+                      class="w-32 h-32 object-contain rounded border dark:border-border-dark"
+                    />
+                  </span>
+                  <span v-else-if="hasHtml(choice)" v-html="choice"></span>
+                  <span v-else>{{ choice }}</span>
+                </div>
               </label>
             </div>
           </div>
@@ -108,31 +125,33 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import api from '@/Api/Axios';
 import { toast } from 'vue-sonner';
+import type { ComponentPublicInstance } from 'vue';
+
+import Logo from '@/components/Logo.vue';
+
+import StudentInfoCard from '@/components/StudentInfoCard.vue';
 
 const studentData = ref<any | null>(null);
 const schoolData = ref<any | null>(null);
 const questions = ref<any[]>([]);
-const answers = ref<Record<number, string>>({});
+
+// ✅ answers are stored by question.id → selected choice index (number)
+const answers = ref<Record<number, number>>({});
+
 const loading = ref(true);
 const submitted = ref(false);
 
-const isImageUrl = (str: string) => {
-  return /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(str);
-};
-
-const hasHtml = (str: string) => {
-  return /<\/?[a-z][\s\S]*>/i.test(str);
-};
+const isImageUrl = (str: string) => /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(str);
+const hasHtml = (str: string) => /<\/?[a-z][\s\S]*>/i.test(str);
 
 const router = useRouter();
 
-const allAnswered = computed(() => {
-  return questions.value.length > 0 && questions.value.every((q) => answers.value[q.id]);
-});
+const allAnswered = computed(
+  () =>
+    questions.value.length > 0 && questions.value.every((q) => answers.value[q.id] !== undefined)
+);
 
 // ✅ Timer (45 minutes)
 const totalTime = 45 * 60; // 2700 seconds
@@ -148,9 +167,10 @@ const formattedTime = computed(() => {
 });
 
 const progressPercent = computed(() => (timeLeft.value / totalTime) * 100);
+
 const progressColor = computed(() => {
-  if (progressPercent.value > 50) return 'bg-green-500';
-  if (progressPercent.value > 20) return 'bg-yellow-500';
+  if (progressPercent.value > 66) return 'bg-green-500';
+  if (progressPercent.value > 33) return 'bg-yellow-500';
   return 'bg-red-500';
 });
 
@@ -167,9 +187,9 @@ onMounted(async () => {
     },
     { deep: true }
   );
+
   const storedStudent = localStorage.getItem('studentData');
   const storedSchool = localStorage.getItem('schoolData');
-
   if (storedStudent) studentData.value = JSON.parse(storedStudent);
   if (storedSchool) schoolData.value = JSON.parse(storedSchool);
 
@@ -199,11 +219,9 @@ onBeforeUnmount(() => {
 });
 
 // ✅ Unanswered tracking
-const unansweredCount = computed(() => {
-  return questions.value.filter((q) => !answers.value[q.id]).length;
-});
-
-import type { ComponentPublicInstance } from 'vue';
+const unansweredCount = computed(
+  () => questions.value.filter((q) => answers.value[q.id] === undefined).length
+);
 
 const questionRefs = ref<Record<number, Element | ComponentPublicInstance | null>>({});
 const setQuestionRef = (id: number) => (el: Element | ComponentPublicInstance | null) => {
@@ -211,11 +229,10 @@ const setQuestionRef = (id: number) => (el: Element | ComponentPublicInstance | 
 };
 
 const scrollToNearestUnanswered = () => {
-  const unanswered = questions.value.filter((q) => !answers.value[q.id]).map((q) => q.id);
-
+  const unanswered = questions.value
+    .filter((q) => answers.value[q.id] === undefined)
+    .map((q) => q.id);
   if (unanswered.length === 0) return;
-
-  // pick the first unanswered
   const nearestId = unanswered[0];
   const target = questionRefs.value[nearestId];
   if (target && target instanceof Element) {
@@ -223,13 +240,14 @@ const scrollToNearestUnanswered = () => {
   }
 };
 
-const getChoices = (question: any) => ({
-  ch1: question.ch1,
-  ch2: question.ch2,
-  ch3: question.ch3,
-  ch4: question.ch4,
-  ch5: question.ch5,
-});
+// ✅ Choices now return an array (so choiceIndex is always a number)
+const getChoices = (question: any): string[] => [
+  question.ch1,
+  question.ch2,
+  question.ch3,
+  question.ch4,
+  question.ch5,
+];
 
 const examResult = async () => {
   if (submitted.value) return;
@@ -240,7 +258,7 @@ const examResult = async () => {
       school: schoolData.value?.school,
       answers: Object.entries(answers.value).map(([question_id, answer]) => ({
         question_id: Number(question_id),
-        answer,
+        answer: `ch${Number(answer) + 1}`,
       })),
     };
 

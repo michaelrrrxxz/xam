@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateQuestionRequest extends FormRequest
 {
@@ -19,45 +20,84 @@ class UpdateQuestionRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
-            'test_type' => 'required|in:verbal,non-verbal',
+public function rules(): array
+{
+    return [
+        'format' => 'required|in:text,photo',
 
+        // Question
+        'question' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'question_image' => Rule::when(
+            request()->hasFile('question_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
-            'question' => 'required_without:question_file|string|max:250',
-            'question_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        // Choices
+        'ch1' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'ch1_image' => Rule::when(
+            request()->hasFile('ch1_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
+        'ch2' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'ch2_image' => Rule::when(
+            request()->hasFile('ch2_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
-            'ch1' => 'required|string|max:100',
-            'ch2' => 'required|string|max:100',
-            'ch3' => 'required|string|max:100',
-            'ch4' => 'required|string|max:100',
-            'ch5' => 'required|string|max:100',
+        'ch3' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'ch3_image' => Rule::when(
+            request()->hasFile('ch3_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
+        'ch4' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'ch4_image' => Rule::when(
+            request()->hasFile('ch4_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
-            'answer' => [
-                'required',
-                'in:ch1,ch2,ch3,ch4,ch5',
-            ],
+        'ch5' => Rule::when(
+            request('format') === 'text',
+            ['required', 'string', 'max:100']
+        ),
+        'ch5_image' => Rule::when(
+            request()->hasFile('ch5_image'),
+            ['image', 'mimes:jpg,jpeg,png,gif', 'max:2048']
+        ),
 
+        // Answer & types
+        'answer' => 'required|in:ch1,ch2,ch3,ch4,ch5',
+        'test_type' => 'required|in:Verbal,non-verbal',
+        'qtype' => [
+            'required',
+            function ($attribute, $value, $fail) {
+                $testType = $this->input('test_type');
+                $allowedTypes = $testType === 'Verbal'
+                    ? ['Verbal Reasoning', 'Verbal Comprehension']
+                    : ['Quantitative Reasoning', 'Figural Reasoning'];
 
-            'qtype' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    $testType = $this->input('test_type');
-                    $verbalTypes = ['verbal reasoning', 'verbal comprehension'];
-                    $nonVerbalTypes = ['quantitative reasoning', 'figural reasoning'];
-
-                    if ($testType === 'verbal' && !in_array($value, $verbalTypes)) {
-                        $fail('For verbal tests, qtype must be verbal reasoning or verbal comprehension.');
-                    }
-
-                    if ($testType === 'non-verbal' && !in_array($value, $nonVerbalTypes)) {
-                        $fail('For non-verbal tests, qtype must be quantitative reasoning or figural reasoning.');
-                    }
+                if (!in_array($value, $allowedTypes)) {
+                    $fail("For {$testType} tests, qtype must be one of: " . implode(', ', $allowedTypes) . '.');
                 }
-            ],
-        ];
-    }
+            }
+        ],
+    ];
+}
+
 }

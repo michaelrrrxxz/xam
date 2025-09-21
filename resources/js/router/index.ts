@@ -6,6 +6,7 @@ import Register from '@/Pages/Auth/Register.vue';
 import Landing from '@/Pages/Auth/LandingPage.vue';
 
 import EnrolledStudent from '@/Pages/Admin/EnrolledStudent.vue';
+import Users from '@/Pages/Admin/Users.vue';
 import Batch from '@/Pages/Admin/Batch.vue';
 import ResultsByBatch from '@/Pages/Admin/ResultsbyBatch.vue';
 import Questions from '@/Pages/Admin/Questions.vue';
@@ -109,6 +110,13 @@ const routes: RouteRecordRaw[] = [
     meta: { title: `Batch: ${appName}`, requiresAuth: true },
     props: true,
   },
+  {
+    path: '/users',
+    name: 'Users',
+    component: Users,
+    meta: { title: `Users: ${appName}`, requiresAuth: true },
+    props: true,
+  },
 
   {
     path: '/batch/:id/results',
@@ -133,7 +141,7 @@ const routes: RouteRecordRaw[] = [
     props: true,
   },
 
-    {
+  {
     path: '/enrolled-students/:id',
     name: 'ViewEnrolledStudent',
     component: ViewEnrolledStudent,
@@ -151,6 +159,7 @@ const routes: RouteRecordRaw[] = [
     path: '/setup',
     name: 'setup',
     component: Setup,
+    meta: { title: `Setup: ${appName}`, requiresAuth: true },
   },
 
   // --- Optional 404 Page --- //

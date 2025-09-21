@@ -32,24 +32,38 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import { SchoolSettingsForm } from '@/src/types';
+/**
+ * ✅ Types
 
-const form = ref<{ school_name: string; school_logo: File | null }>({
+
+/**
+ * ✅ State
+ */
+const form = ref<SchoolSettingsForm>({
   school_name: '',
   school_logo: null,
 });
+
 const preview = ref<string | null>(null);
 
+/**
+ * ✅ File change handler
+ */
 function onFileChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  if (file) {
-    form.value.school_logo = file;
-    preview.value = URL.createObjectURL(file);
-  }
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0] ?? null;
+  form.value.school_logo = file;
+  preview.value = file ? URL.createObjectURL(file) : null;
 }
 
+/**
+ * ✅ Submit form
+ */
 async function saveSettings() {
   const data = new FormData();
   data.append('school_name', form.value.school_name);
+
   if (form.value.school_logo) {
     data.append('school_logo', form.value.school_logo);
   }

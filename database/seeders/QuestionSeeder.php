@@ -1129,7 +1129,7 @@ class QuestionSeeder extends Seeder
         'format' => 1,
         'test_type' => 'Verbal',
         'question' => 'Choose the words that <i>best</i> complete this sentence: <br> Although Jamie s grades were _________, her parents were ________',
-        'answer' => 'acceptable ---- disappointed',
+        'answer' => 'ch4',
         'ch1' => 'excellent ---- delighted',
         'ch2' => 'terrible ---- furious',
         'ch3' => 'poor ---- dissatisfied',

@@ -71,16 +71,16 @@ class QuestionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateQuestionRequest $request, Question $question)
+public function update(UpdateQuestionRequest $request, Question $question, QuestionService $service)
     {
         $validated = $request->validated();
 
-        $question->update($validated);
+        $question = $service->update($question, $validated, $request);
 
         return response()->json([
-            'message' => 'Question created successfully',
-            'data' => $question
-        ], 201);
+            'message' => 'Question updated successfully',
+            'data' => $question,
+        ], 200);
     }
 
     /**

@@ -158,6 +158,8 @@ import {
 // Import JSON address data
 import addressJson from '@/assets/data.json';
 
+import { School } from '@/src/types';
+
 const router = useRouter();
 
 // Form state
@@ -171,10 +173,6 @@ const form = ref({
   group_abc: '',
 });
 
-interface School {
-  id: number;
-  name: string;
-}
 const schools = ref<School[]>([]);
 const open = ref(false);
 

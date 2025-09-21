@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { useMediaQuery } from '@vueuse/core'
-import { useRouter } from 'vue-router'
-import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock, RatioIcon, Printer } from 'lucide-vue-next'
+import { useMediaQuery } from '@vueuse/core';
+import { useRouter } from 'vue-router';
+import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock, RatioIcon, Printer } from 'lucide-vue-next';
 
-import AppLayout from '@/layouts/AppLayout.vue'
-import BatchForm from '@/components/BatchForm.vue'
+import AppLayout from '@/layouts/AppLayout.vue';
+import BatchForm from '@/components/BatchForm.vue';
 
 // Shadcn UI
 import {
@@ -14,14 +14,14 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,14 +29,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-} from '@/components/ui/drawer'
+} from '@/components/ui/drawer';
 import {
   Select,
   SelectContent,
@@ -45,13 +45,14 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 // Composables
-import { Batch, useBatch } from '@/composables/batch/useBatch'
-import { useBatchFilters } from '@/composables/batch/useBatchFilters'
+import { useBatch } from '@/composables/batch/useBatch';
+import { useBatchFilters } from '@/composables/batch/useBatchFilters';
+import { Batch } from '@/src/types';
 
 // useBatch → CRUD + API
 const {
@@ -65,32 +66,26 @@ const {
   openModal,
   openEditModal,
   saveBatch,
-  deleteBatch,
+  //   deleteBatch,
   lockBatch,
   activateBatch,
-} = useBatch()
+} = useBatch();
 
 // useBatchFilters → search, sort, filter, grouping
-const {
-  searchQuery,
-  yearFilter,
-  availableYears,
-  filteredBatch,
-  groupedByYear,
-  toggleSort,
-} = useBatchFilters(batch)
+const { searchQuery, yearFilter, availableYears, filteredBatch, groupedByYear, toggleSort } =
+  useBatchFilters(batch);
 
-const isDesktop = useMediaQuery('(min-width: 768px)')
-const router = useRouter()
+const isDesktop = useMediaQuery('(min-width: 768px)');
+const router = useRouter();
 
 // Extra actions
 const print = (id: number) => {
-  window.open(`batch/results/${id}/print`, '_blank')
-}
+  window.open(`batch/results/${id}/print`, '_blank');
+};
 
 const goToResults = (id: number) => {
-  router.push({ name: 'ResultsByBatch', params: { id } })
-}
+  router.push({ name: 'ResultsByBatch', params: { id } });
+};
 </script>
 
 <template>
@@ -110,28 +105,22 @@ const goToResults = (id: number) => {
           />
         </div>
 
-
         <div class="flex items-center gap-2">
-  <Select v-model="yearFilter">
-    <SelectTrigger class="w-[180px]">
-      <SelectValue placeholder="Select year" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectGroup>
-        <SelectLabel>Filter by Year</SelectLabel>
-        <SelectItem value="all">All Years</SelectItem>
-        <SelectItem
-          v-for="y in availableYears"
-          :key="y"
-          :value="y.toString()"
-        >
-          {{ y }}
-        </SelectItem>
-      </SelectGroup>
-    </SelectContent>
-  </Select>
-</div>
-
+          <Select v-model="yearFilter">
+            <SelectTrigger class="w-[180px]">
+              <SelectValue placeholder="Select year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Filter by Year</SelectLabel>
+                <SelectItem value="all">All Years</SelectItem>
+                <SelectItem v-for="y in availableYears" :key="y" :value="y.toString()">
+                  {{ y }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
         <!-- Right: Add Batch Button -->
         <Button size="sm" variant="secondary" class="flex items-center gap-2" @click="openModal">
@@ -153,78 +142,80 @@ const goToResults = (id: number) => {
             </TableRow>
           </TableHeader>
 
-      <TableBody>
-  <template v-if="isLoading">
-    <TableRow v-for="n in 1" :key="n">
-      <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
-      <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
-      <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
-      <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
-      <TableCell><Skeleton class="h-4 w-20 rounded" /></TableCell>
-      <TableCell><Skeleton class="h-4 w-10 rounded" /></TableCell>
-    </TableRow>
-  </template>
+          <TableBody>
+            <template v-if="isLoading">
+              <TableRow v-for="n in 1" :key="n">
+                <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-20 rounded" /></TableCell>
+                <TableCell><Skeleton class="h-4 w-10 rounded" /></TableCell>
+              </TableRow>
+            </template>
 
-  <template v-else>
-    <template v-for="(group, year) in groupedByYear(filteredBatch as Batch[])" :key="year">
-      <TableRow v-for="(b, index) in group" :key="b.id">
-        <!-- Year cell only on first row of this group -->
-        <TableCell
-          v-if="index === 0"
-          :rowspan="group.length"
-          class="text-center font-bold"
-        >
-          {{ year }}
-        </TableCell>
+            <template v-else>
+              <template
+                v-for="(group, year) in groupedByYear(filteredBatch as Batch[])"
+                :key="year"
+              >
+                <TableRow v-for="(b, index) in group" :key="b.id">
+                  <!-- Year cell only on first row of this group -->
+                  <TableCell
+                    v-if="index === 0"
+                    :rowspan="group.length"
+                    class="text-center font-bold"
+                  >
+                    {{ year }}
+                  </TableCell>
 
-        <TableCell>{{ b.name }}</TableCell>
-        <TableCell>{{ b.description }}</TableCell>
-        <TableCell>{{ b.access_key }}</TableCell>
-        <TableCell>45 Minutes</TableCell>
-        <TableCell>
-          <Lock v-if="b.isLocked" class="w-5 h-5 text-red-500" />
-          <Unlock v-else class="w-5 h-5 text-green-500" />
-        </TableCell>
-        <TableCell>
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="ghost" size="sm" class="flex items-center gap-1">
-                <Ellipsis class="w-4 h-4 mr-2" />
-              </Button>
-            </DropdownMenuTrigger>
+                  <TableCell>{{ b.name }}</TableCell>
+                  <TableCell>{{ b.description }}</TableCell>
+                  <TableCell>{{ b.access_key }}</TableCell>
+                  <TableCell>45 Minutes</TableCell>
+                  <TableCell>
+                    <Lock v-if="b.isLocked" class="w-5 h-5 text-red-500" />
+                    <Unlock v-else class="w-5 h-5 text-green-500" />
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger as-child>
+                        <Button variant="ghost" size="sm" class="flex items-center gap-1">
+                          <Ellipsis class="w-4 h-4 mr-2" />
+                        </Button>
+                      </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
 
-              <DropdownMenuItem @click="goToResults(b.id)">
-                <RatioIcon class="w-4 h-4 mr-2" /> Results
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="print(b.id)">
-                <Printer class="w-4 h-4 mr-2" /> Print
-              </DropdownMenuItem>
-              <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
-                <Lock class="w-4 h-4 mr-2" /> Lock
-              </DropdownMenuItem>
-              <DropdownMenuItem v-else @click="activateBatch(b.id)">
-                <Unlock class="w-4 h-4 mr-2" /> Activate
-              </DropdownMenuItem>
+                        <DropdownMenuItem @click="goToResults(b.id)">
+                          <RatioIcon class="w-4 h-4 mr-2" /> Results
+                        </DropdownMenuItem>
+                        <DropdownMenuItem @click="print(b.id)">
+                          <Printer class="w-4 h-4 mr-2" /> Print
+                        </DropdownMenuItem>
+                        <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
+                          <Lock class="w-4 h-4 mr-2" /> Lock
+                        </DropdownMenuItem>
+                        <DropdownMenuItem v-else @click="activateBatch(b.id)">
+                          <Unlock class="w-4 h-4 mr-2" /> Activate
+                        </DropdownMenuItem>
 
-              <DropdownMenuItem @click="openEditModal(b.id)">
-                <Pencil class="w-4 h-4 mr-2" /> Edit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TableCell>
-      </TableRow>
-    </template>
+                        <DropdownMenuItem @click="openEditModal(b.id)">
+                          <Pencil class="w-4 h-4 mr-2" /> Edit
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              </template>
 
-    <TableRow v-if="!filteredBatch.length">
-      <TableCell colspan="7" class="text-center">No data available.</TableCell>
-    </TableRow>
-  </template>
-</TableBody>
-
+              <TableRow v-if="!filteredBatch.length">
+                <TableCell colspan="7" class="text-center">No data available.</TableCell>
+              </TableRow>
+            </template>
+          </TableBody>
         </Table>
       </div>
 

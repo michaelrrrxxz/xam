@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\EnrolledStudentController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -40,6 +41,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::apiResource('result', AdminResultController::class)->only(['index']);
+        Route::apiResource('user', UserController::class);
         Route::get('/results/batch/{id}', [AdminResultController::class, 'resultsByBatch']);
         Route::apiResource('dashboard', DashboardController::class)->only(['index']);
         Route::apiResource('exam', ExamController::class);

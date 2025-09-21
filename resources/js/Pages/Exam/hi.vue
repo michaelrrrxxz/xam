@@ -4,11 +4,65 @@
       <!-- Exam Header -->
       <CardHeader class="flex flex-col items-center space-y-3">
         <Logo class="h-16 w-16 mx-auto" />
-        <CardTitle class="text-2xl font-bold tracking-wide text-center"> Trial </CardTitle>
+        <CardTitle class="text-2xl font-bold tracking-wide text-center"> Examination </CardTitle>
       </CardHeader>
 
       <!-- Student Info Card -->
-      <StudentInfoCard :studentData="studentData" :schoolData="schoolData" />
+      <div
+        v-if="studentData && schoolData"
+        class="mb-6 rounded-xl bg-white dark:bg-gray-800 shadow-md text-gray-800 dark:text-gray-100 font-serif p-6"
+      >
+        <div class="text-center mb-4">
+          <h2 class="text-2xl font-bold underline tracking-wide">Student Information</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
+          <div class="flex flex-col">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">Name</span>
+            <span
+              class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
+            >
+              {{ studentData.name }}
+            </span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">ID Number</span>
+            <span
+              class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
+            >
+              {{ studentData.id_number }}
+            </span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">Course</span>
+            <span
+              class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
+            >
+              {{ studentData.course }}
+            </span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">Gender</span>
+            <span
+              class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
+            >
+              {{ studentData.gender }}
+            </span>
+          </div>
+
+          <div class="flex flex-col sm:col-span-2">
+            <span class="font-semibold text-gray-700 dark:text-gray-300">School</span>
+            <span
+              class="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600"
+            >
+              {{ schoolData.school }}
+            </span>
+          </div>
+        </div>
+      </div>
 
       <!-- Exam Questions -->
       <CardContent>
@@ -91,7 +145,7 @@
           <Button
             v-if="allAnswered && !submitted"
             class="w-full mt-4 font-semibold"
-            @click="goToExam"
+            @click="examResult"
           >
             Submit Answers
           </Button>
@@ -111,8 +165,6 @@ import { toast } from 'vue-sonner';
 import type { ComponentPublicInstance } from 'vue';
 
 import Logo from '@/components/Logo.vue';
-
-import StudentInfoCard from '@/components/StudentInfoCard.vue';
 
 const studentData = ref<any | null>(null);
 const schoolData = ref<any | null>(null);
@@ -139,7 +191,22 @@ const totalTime = 45 * 60; // 2700 seconds
 const timeLeft = ref(totalTime);
 let timerInterval: number | null = null;
 
+const formattedTime = computed(() => {
+  const minutes = Math.floor(timeLeft.value / 60)
+    .toString()
+    .padStart(2, '0');
+  const seconds = (timeLeft.value % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+});
+
+const progressPercent = computed(() => (timeLeft.value / totalTime) * 100);
+
 onMounted(async () => {
+  const storedAnswers = localStorage.getItem('examAnswers');
+  if (storedAnswers) {
+    answers.value = JSON.parse(storedAnswers);
+  }
+
   watch(
     answers,
     (newAnswers) => {
@@ -154,18 +221,50 @@ onMounted(async () => {
   if (storedSchool) schoolData.value = JSON.parse(storedSchool);
 
   try {
-    const response = await api.get('examinee/trial');
+    const response = await api.get('examinee/question');
     questions.value = response.data;
   } catch (error) {
     console.error('Error fetching questions:', error);
   } finally {
     loading.value = false;
   }
+
+  // Start timer
+  timerInterval = setInterval(() => {
+    if (timeLeft.value > 0) {
+      timeLeft.value--;
+    } else {
+      clearInterval(timerInterval!);
+      toast.error('Time is up! Submitting exam...');
+      examResult();
+    }
+  }, 1000) as unknown as number;
 });
+
+onBeforeUnmount(() => {
+  if (timerInterval) clearInterval(timerInterval);
+});
+
+// ✅ Unanswered tracking
+const unansweredCount = computed(
+  () => questions.value.filter((q) => answers.value[q.id] === undefined).length
+);
 
 const questionRefs = ref<Record<number, Element | ComponentPublicInstance | null>>({});
 const setQuestionRef = (id: number) => (el: Element | ComponentPublicInstance | null) => {
   if (el) questionRefs.value[id] = el;
+};
+
+const scrollToNearestUnanswered = () => {
+  const unanswered = questions.value
+    .filter((q) => answers.value[q.id] === undefined)
+    .map((q) => q.id);
+  if (unanswered.length === 0) return;
+  const nearestId = unanswered[0];
+  const target = questionRefs.value[nearestId];
+  if (target && target instanceof Element) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 };
 
 // ✅ Choices now return an array (so choiceIndex is always a number)
@@ -177,10 +276,30 @@ const getChoices = (question: any): string[] => [
   question.ch5,
 ];
 
-const goToExam = () => {
-  toast.success('Trial Finished! Redirecting...');
-  setTimeout(() => {
-    router.push('/exam');
-  }, 2000);
+const examResult = async () => {
+  if (submitted.value) return;
+
+  try {
+    const payload = {
+      student_id: studentData.value?.id,
+      school: schoolData.value?.school,
+      answers: Object.entries(answers.value).map(([question_id, answer]) => ({
+        question_id: Number(question_id),
+        answer,
+      })),
+    };
+
+    await api.post('examinee/result', payload);
+    localStorage.removeItem('examAnswers');
+    toast.success('Exam Finished! Redirecting...');
+    submitted.value = true;
+
+    setTimeout(() => {
+      router.push({ name: 'exam-result' });
+    }, 2000);
+  } catch (error) {
+    console.error('Error submitting exam:', error);
+    toast.error('Failed to submit exam. Please try again.');
+  }
 };
 </script>

@@ -10,22 +10,42 @@
             <SelectValue placeholder="Select a test type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="verbal">Verbal</SelectItem>
+            <SelectItem value="Verbal">Verbal</SelectItem>
             <SelectItem value="non-verbal">Non-Verbal</SelectItem>
           </SelectContent>
         </Select>
         <p v-if="errors.test_type" class="text-sm text-red-500">{{ errors.test_type }}</p>
       </div>
 
+      <div class="grid gap-2">
+        <Label for="qtype">Question Type</Label>
+        <Select v-model="form.qtype">
+          <SelectTrigger>
+            <SelectValue placeholder="Select question type" />
+          </SelectTrigger>
+          <SelectContent>
+            <template v-if="form.test_type === 'Verbal'">
+              <SelectItem value="Verbal Reasoning">Verbal Reasoning</SelectItem>
+              <SelectItem value="Verbal Comprehension">Verbal Comprehension</SelectItem>
+            </template>
+            <template v-else-if="form.test_type === 'non-verbal'">
+              <SelectItem value="Quantitative Reasoning">Quantitative Reasoning</SelectItem>
+              <SelectItem value="Figural Reasoning">Figural Reasoning</SelectItem>
+            </template>
+          </SelectContent>
+        </Select>
+        <p v-if="errors.qtype" class="text-sm text-red-500">{{ errors.qtype }}</p>
+      </div>
+
       <!-- Question Image -->
       <div class="grid gap-2">
-        <Label for="question">Question Image</Label>
+        <Label for="question_image">Question Image</Label>
         <input
           type="file"
           accept="image/*"
           @change="(e) => handleFileUpload(e, 'question_image')"
         />
-        <div v-if="isUploadable(form.question_image)" class="mt-2">
+        <div v-if="form.question_image?.preview" class="mt-2">
           <img
             :src="form.question_image.preview"
             alt="Question Preview"
@@ -34,7 +54,7 @@
         </div>
       </div>
 
-      <!-- Choices Images -->
+      <!-- Choice Images -->
       <div v-for="choice in choices" :key="choice.key" class="grid gap-2">
         <Label :for="choice.key">Choice {{ choice.index }}</Label>
         <input
@@ -42,9 +62,10 @@
           accept="image/*"
           @change="(e) => handleFileUpload(e, `${choice.key}_image`)"
         />
-        <div v-if="isUploadable(form[`${choice.key}_image`])" class="mt-2">
-          <img :src="form[`${choice.key}_image`].preview" class="max-h-32 rounded border" />
+            <div v-if="(form[`${choice.key}_image`] as UploadableField | null)?.preview" class="mt-2">
+        <img :src="(form[`${choice.key}_image`] as UploadableField).preview" class="max-h-32 rounded border" />
         </div>
+
       </div>
 
       <!-- Correct Answer -->
@@ -63,26 +84,9 @@
       </div>
 
       <!-- Question Type -->
-      <div class="grid gap-2">
-        <Label for="qtype">Question Type</Label>
-        <Select v-model="form.qtype">
-          <SelectTrigger>
-            <SelectValue placeholder="Select question type" />
-          </SelectTrigger>
-          <SelectContent>
-            <template v-if="form.test_type === 'verbal'">
-              <SelectItem value="verbal reasoning">Verbal Reasoning</SelectItem>
-              <SelectItem value="verbal comprehension">Verbal Comprehension</SelectItem>
-            </template>
-            <template v-else-if="form.test_type === 'non-verbal'">
-              <SelectItem value="quantitative reasoning">Quantitative Reasoning</SelectItem>
-              <SelectItem value="figural reasoning">Figural Reasoning</SelectItem>
-            </template>
-          </SelectContent>
-        </Select>
-        <p v-if="errors.qtype" class="text-sm text-red-500">{{ errors.qtype }}</p>
-      </div>
     </div>
+
+    <!-- Force photo mode -->
     <input type="hidden" v-model="form.format" value="photo" />
 
     <!-- Sticky footer button -->
@@ -115,8 +119,8 @@ interface UploadableField {
 interface QuestionForm {
   id: number | null;
   test_type: string;
-  question: string; // only for text mode
-  question_image: UploadableField | null; // for photo mode
+  question: string;
+  question_image: UploadableField | null;
   ch1: string;
   ch1_image: UploadableField | null;
   ch2: string;
@@ -129,7 +133,11 @@ interface QuestionForm {
   ch5_image: UploadableField | null;
   answer: string;
   qtype: string;
-  format: 'photo';
+format: "text" | "photo";
+
+
+
+
 }
 
 const props = defineProps<{
@@ -138,23 +146,22 @@ const props = defineProps<{
   isSaving: boolean;
 }>();
 
-const emit = defineEmits(['save']);
+defineEmits(['save']);
 
+// Generate choice fields dynamically
 const choices = computed(() =>
   Array.from({ length: 5 }, (_, i) => {
     const key = `ch${i + 1}` as const;
-    return { key, index: i + 1, value: props.form[key] };
+    return { key, index: i + 1 };
   })
 );
 
-const isUploadable = (val: any): val is UploadableField =>
-  val && typeof val === 'object' && 'preview' in val;
-
-const handleFileUpload = (e: Event, field: keyof QuestionForm) => {
+// Handle file uploads and set preview
+const handleFileUpload = (e: Event, field: keyof QuestionForm | string) => {
   const target = e.target as HTMLInputElement;
   const files = target.files;
   if (files && files[0]) {
-    props.form[field] = {
+    (props.form as any)[field] = {
       file: files[0],
       preview: URL.createObjectURL(files[0]),
     } as UploadableField;

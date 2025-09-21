@@ -9,83 +9,87 @@
 
       <!-- Cards Section -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Batch Card -->
-<Card class="rounded-2xl shadow-sm">
-  <CardHeader>
-    <template v-if="loading">
-      <Skeleton class="h-5 w-24 mb-1 rounded-md" /> <!-- Title Skeleton -->
-      <Skeleton class="h-4 w-16 rounded-md" />       <!-- Description Skeleton -->
-    </template>
-    <template v-else>
-      <CardTitle class="text-lg font-medium">Batch</CardTitle>
-      <CardDescription>Total count</CardDescription>
-    </template>
-  </CardHeader>
-  <CardContent>
-    <template v-if="loading">
-      <Skeleton class="h-8 w-16 rounded-md" />
-    </template>
-    <template v-else>
-      <h2 class="text-2xl font-semibold tracking-tight">{{ count.batch }}</h2>
-    </template>
-  </CardContent>
-</Card>
+        <!-- Batch Card -->
+        <Card class="rounded-2xl shadow-sm">
+          <CardHeader>
+            <template v-if="loading">
+              <Skeleton class="h-5 w-24 mb-1 rounded-md" />
+              <!-- Title Skeleton -->
+              <Skeleton class="h-4 w-16 rounded-md" />
+              <!-- Description Skeleton -->
+            </template>
+            <template v-else>
+              <CardTitle class="text-lg font-medium">Batch</CardTitle>
+              <CardDescription>Total count</CardDescription>
+            </template>
+          </CardHeader>
+          <CardContent>
+            <template v-if="loading">
+              <Skeleton class="h-8 w-16 rounded-md" />
+            </template>
+            <template v-else>
+              <h2 class="text-2xl font-semibold tracking-tight">{{ count.batch }}</h2>
+            </template>
+          </CardContent>
+        </Card>
 
-<!-- Enrolled Students Card -->
-<Card class="rounded-2xl shadow-sm">
-  <CardHeader>
-    <template v-if="loading">
-      <Skeleton class="h-5 w-32 mb-1 rounded-md" /> <!-- Title Skeleton -->
-      <Skeleton class="h-4 w-20 rounded-md" />       <!-- Description Skeleton -->
-    </template>
-    <template v-else>
-      <CardTitle class="text-lg font-medium">Enrolled Students</CardTitle>
-      <CardDescription>Total count</CardDescription>
-    </template>
-  </CardHeader>
-  <CardContent>
-    <template v-if="loading">
-      <Skeleton class="h-8 w-16 rounded-md" />
-    </template>
-    <template v-else>
-      <h2 class="text-2xl font-semibold tracking-tight">{{ count.enrolledstudents }}</h2>
-    </template>
-  </CardContent>
-</Card>
+        <!-- Enrolled Students Card -->
+        <Card class="rounded-2xl shadow-sm">
+          <CardHeader>
+            <template v-if="loading">
+              <Skeleton class="h-5 w-32 mb-1 rounded-md" />
+              <!-- Title Skeleton -->
+              <Skeleton class="h-4 w-20 rounded-md" />
+              <!-- Description Skeleton -->
+            </template>
+            <template v-else>
+              <CardTitle class="text-lg font-medium">Enrolled Students</CardTitle>
+              <CardDescription>Total count</CardDescription>
+            </template>
+          </CardHeader>
+          <CardContent>
+            <template v-if="loading">
+              <Skeleton class="h-8 w-16 rounded-md" />
+            </template>
+            <template v-else>
+              <h2 class="text-2xl font-semibold tracking-tight">{{ count.enrolledstudents }}</h2>
+            </template>
+          </CardContent>
+        </Card>
 
-<!-- Evaluated Students Card -->
-<Card class="rounded-2xl shadow-sm">
-  <CardHeader>
-    <template v-if="loading">
-      <Skeleton class="h-5 w-36 mb-1 rounded-md" /> <!-- Title Skeleton -->
-      <Skeleton class="h-4 w-20 rounded-md" />       <!-- Description Skeleton -->
-    </template>
-    <template v-else>
-      <CardTitle class="text-lg font-medium">Evaluated Students</CardTitle>
-      <CardDescription>Total count</CardDescription>
-    </template>
-  </CardHeader>
-  <CardContent>
-    <template v-if="loading">
-      <Skeleton class="h-8 w-16 rounded-md" />
-    </template>
-    <template v-else>
-      <h2 class="text-2xl font-semibold tracking-tight">{{ count.finishedexams }}</h2>
-    </template>
-  </CardContent>
-</Card>
-
+        <!-- Evaluated Students Card -->
+        <Card class="rounded-2xl shadow-sm">
+          <CardHeader>
+            <template v-if="loading">
+              <Skeleton class="h-5 w-36 mb-1 rounded-md" />
+              <!-- Title Skeleton -->
+              <Skeleton class="h-4 w-20 rounded-md" />
+              <!-- Description Skeleton -->
+            </template>
+            <template v-else>
+              <CardTitle class="text-lg font-medium">Evaluated Students</CardTitle>
+              <CardDescription>Total count</CardDescription>
+            </template>
+          </CardHeader>
+          <CardContent>
+            <template v-if="loading">
+              <Skeleton class="h-8 w-16 rounded-md" />
+            </template>
+            <template v-else>
+              <h2 class="text-2xl font-semibold tracking-tight">{{ count.finishedexams }}</h2>
+            </template>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- Table Section -->
       <div class="rounded-2xl shadow-sm p-4">
         <template v-if="loading">
-         <Skeleton class="h-8 w-16 rounded-md text-lg font-medium mb-4" />
+          <Skeleton class="h-8 w-16 rounded-md text-lg font-medium mb-4" />
         </template>
         <template v-else>
-              <h2 class="text-lg font-medium mb-4">Recent Activity</h2>
+          <h2 class="text-lg font-medium mb-4">Recent Activity</h2>
         </template>
-
 
         <template v-if="loading">
           <div class="space-y-3">
@@ -129,42 +133,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { onMounted, ref } from 'vue';
 import api from '@/Api/Axios';
-
+import { Student, Batch, Count, Recent } from '@/src/types';
 dayjs.extend(relativeTime);
-
-// --- Interfaces ---
-interface Student {
-  id: number;
-  id_number: string;
-  last_name: string;
-  first_name: string;
-  middle_name: string;
-  birth_day: string;
-  course: string;
-  gender: string;
-}
-
-interface Batch {
-  id: number;
-  name: string;
-}
-
-interface Recent {
-  id: number;
-  student_id: number;
-  batch_id: number;
-  total_score: number;
-  created_at: string;
-  batch: Batch;
-  student: Student;
-}
-
-interface Count {
-  batch: number;
-  enrolledstudents: number;
-  finishedexams: number;
-  recent: Recent[];
-}
 
 // --- State ---
 const count = ref<Count>({

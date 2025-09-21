@@ -3,13 +3,14 @@ import { ref } from 'vue';
 import api from '@/Api/Axios';
 
 export const useUserStore = defineStore('user', () => {
+  const id = ref<number | null>(null);
   const name = ref('');
   const email = ref('');
   const avatar = ref('/avatars/default.jpg');
   const loading = ref(false);
 
   async function fetchUser(force = false) {
-    if (name.value && email.value && !force) {
+    if (id.value && name.value && email.value && !force) {
       // Already loaded, skip
       return;
     }
@@ -23,9 +24,10 @@ export const useUserStore = defineStore('user', () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      id.value = response.data?.id ?? null; // ✅ fixed
       name.value = response.data?.name ?? '';
       email.value = response.data?.email ?? '';
-      avatar.value = '/avatars/default.jpg';
+      avatar.value = response.data?.avatar ?? '/avatars/default.jpg';
     } catch (error) {
       console.error('Failed to fetch user:', error);
     } finally {
@@ -47,6 +49,8 @@ export const useUserStore = defineStore('user', () => {
       );
 
       localStorage.removeItem('token');
+
+      id.value = null;
       name.value = '';
       email.value = '';
       avatar.value = '/avatars/default.jpg';
@@ -55,5 +59,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { name, email, avatar, loading, fetchUser, logout };
+  return { id, name, email, avatar, loading, fetchUser, logout };
 });
