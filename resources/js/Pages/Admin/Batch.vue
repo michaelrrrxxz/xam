@@ -1,7 +1,12 @@
 <script lang="ts" setup>
-import { ref, onMounted, reactive, computed } from 'vue';
-import api from '@/Api/Axios';
-import { useMediaQuery } from '@vueuse/core';
+import { useMediaQuery } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock, RatioIcon, Printer } from 'lucide-vue-next'
+
+import AppLayout from '@/layouts/AppLayout.vue'
+import BatchForm from '@/components/BatchForm.vue'
+
+// Shadcn UI
 import {
   Table,
   TableHeader,
@@ -9,14 +14,14 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from '@/components/ui/table';
+} from '@/components/ui/table'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,251 +29,70 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-} from '@/components/ui/drawer';
+} from '@/components/ui/drawer'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 
-import { Skeleton } from '@/components/ui/skeleton';
+// Composables
+import { Batch, useBatch } from '@/composables/batch/useBatch'
+import { useBatchFilters } from '@/composables/batch/useBatchFilters'
 
-import { Button } from '@/components/ui/button';
-import { toast } from 'vue-sonner';
-import 'vue-sonner/style.css';
+// useBatch → CRUD + API
+const {
+  batch,
+  isLoading,
+  isSaving,
+  errors,
+  form,
+  isOpen,
+  isEditOpen,
+  openModal,
+  openEditModal,
+  saveBatch,
+  deleteBatch,
+  lockBatch,
+  activateBatch,
+} = useBatch()
 
-import { Pencil, Trash, Ellipsis, Plus, Lock, Unlock, RatioIcon, Printer } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
-import BatchForm from '@/components/BatchForm.vue';
+// useBatchFilters → search, sort, filter, grouping
+const {
+  searchQuery,
+  yearFilter,
+  availableYears,
+  filteredBatch,
+  groupedByYear,
+  toggleSort,
+} = useBatchFilters(batch)
 
-import { useRouter } from 'vue-router';
+const isDesktop = useMediaQuery('(min-width: 768px)')
+const router = useRouter()
 
-const router = useRouter();
-
-// Batch interface
-interface Batch {
-  id: number;
-  name: string;
-  description: string | null;
-  access_key: number;
-  isLocked: boolean;
-  created_at: Date;
+// Extra actions
+const print = (id: number) => {
+  window.open(`batch/results/${id}/print`, '_blank')
 }
 
-// Reactive States
-const batch = ref<Batch[]>([]);
-const isOpen = ref(false);
-const isEditOpen = ref(false);
-const isSaving = ref(false);
-const errors = ref<{ name?: string }>({});
-const isDesktop = useMediaQuery('(min-width: 768px)');
-const searchQuery = ref('');
-const isLoading = ref(true);
-const sortKey = ref<'year' | 'name' | 'access_key'>('year');
-const sortOrder = ref<'asc' | 'desc'>('asc');
-
-// Unified form state
-const form = reactive<{ id: number | null; name: string; description: string }>({
-  id: null,
-  name: '',
-  description: '',
-});
-
-// Fetch all batch
-const fetchBatch = async () => {
-  isLoading.value = true;
-  try {
-    const response = await api.get('admin/batch');
-    batch.value = response.data;
-  } catch (error) {
-    console.warn(error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Open Add Modal
-const openModal = () => {
-  resetForm();
-  isOpen.value = true;
-};
-
-// Open Edit Modal
-const openEditModal = async (id: number) => {
-  const response = await api.get(`admin/batch/${id}`);
-  const batch = response.data;
-  if (batch) {
-    form.id = batch.id;
-    form.name = batch.name;
-    form.description = batch.description || '';
-    isEditOpen.value = true;
-  }
-};
-
-// Reset form
-const resetForm = () => {
-  form.id = null;
-  form.name = '';
-  form.description = '';
-};
-
-const lockBatch = (id: number) => {
-  toast('Are you sure?', {
-    position: 'top-center',
-    description: 'Lock this Batch.',
-    action: {
-      label: 'Confirm',
-      onClick: async () => {
-        try {
-          await api.put(`admin/batch/${id}/lock`);
-          toast.success('Batch locked successfully!');
-          await fetchBatch();
-        } catch {
-          toast.error('Failed to locked batch.');
-        }
-      },
-    },
-  });
-};
-const activateBatch = (id: number) => {
-  toast('Are you sure?', {
-    position: 'top-center',
-    description: 'Activate this batch.',
-    action: {
-      label: 'Confirm',
-      onClick: async () => {
-        try {
-          await api.put(`admin/batch/${id}/activate`);
-          toast.success('Batch activated successfully!');
-          await fetchBatch();
-        } catch (error: any) {
-          if (error.response?.status === 422) {
-            toast.error(error.response.data?.message || 'An active batch already exists.');
-          } else {
-            toast.error('Failed to activate batch. Please try again.');
-          }
-        }
-      },
-    },
-  });
-};
-
-// Save Batch (Add or Update)
-const saveBatch = async () => {
-  errors.value = {};
-  isSaving.value = true;
-  try {
-    if (form.id) {
-      // Update existing batch
-      await api.put(`admin/batch/${form.id}`, {
-        name: form.name,
-        description: form.description,
-      });
-      toast.success('Batch updated successfully!');
-    } else {
-      // Create new batch
-      await api.post('admin/batch', {
-        name: form.name,
-        description: form.description,
-      });
-      toast.success('Batch added successfully!');
-    }
-
-    // Refresh the batch list after saving
-    await fetchBatch();
-    resetForm();
-    isOpen.value = false;
-    isEditOpen.value = false;
-  } catch (error: any) {
-    if (error.response?.status === 422) {
-      // Check if backend sent a validation or logic error
-      const message = error.response.data?.message;
-
-      if (message?.includes('Cannot create a new batch')) {
-        // Specific message for active batch
-        toast.error('You cannot add a new batch while there is an active batch.');
-      } else if (error.response.data?.errors) {
-        // Handle Laravel validation errors
-        const backendErrors = error.response.data.errors;
-        errors.value = Object.keys(backendErrors).reduce(
-          (acc, key) => {
-            acc[key] = backendErrors[key][0];
-            return acc;
-          },
-          {} as { [key: string]: string }
-        );
-      } else {
-        toast.error(message || 'Validation failed.');
-      }
-    } else {
-      toast.error('Something went wrong.');
-    }
-  } finally {
-    isSaving.value = false;
-  }
-};
-
-// Delete Batch
-const deleteBatch = async (id: number) => {
-  toast('Are you sure?', {
-    position: 'top-center',
-    description: 'This will permanently delete the batch.',
-    action: {
-      label: 'Confirm',
-      onClick: async () => {
-        try {
-          await api.delete(`admin/batch/${id}`);
-          toast.success('Batch deleted successfully!');
-          await fetchBatch();
-        } catch {
-          toast.error('Failed to delete batch.');
-        }
-      },
-    },
-  });
-};
-
-const print = async (id: number) => {
-  window.open(`batch/results/${id}/print`, '_blank');
-};
-
 const goToResults = (id: number) => {
-  router.push({ name: 'ResultsByBatch', params: { id } });
-};
-
-const toggleSort = (key: typeof sortKey.value) => {
-  if (sortKey.value === key) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortKey.value = key;
-    sortOrder.value = 'asc';
-  }
-};
-
-const filteredBatch = computed(() => {
-  let data = batch.value;
-
-  // search
-  if (searchQuery.value) {
-    data = data.filter((e) => e.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
-  }
-
-  // sort
-  return [...data].sort((a, b) => {
-    let valA = sortKey.value === 'year' ? new Date(a.created_at).getFullYear() : a[sortKey.value];
-    let valB = sortKey.value === 'year' ? new Date(b.created_at).getFullYear() : b[sortKey.value];
-
-    if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
-    if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
-    return 0;
-  });
-});
-
-// Fetch batch on mount
-onMounted(fetchBatch);
+  router.push({ name: 'ResultsByBatch', params: { id } })
+}
 </script>
+
 <template>
   <AppLayout>
     <section class="flex flex-col md:p-6">
@@ -286,6 +110,29 @@ onMounted(fetchBatch);
           />
         </div>
 
+
+        <div class="flex items-center gap-2">
+  <Select v-model="yearFilter">
+    <SelectTrigger class="w-[180px]">
+      <SelectValue placeholder="Select year" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectGroup>
+        <SelectLabel>Filter by Year</SelectLabel>
+        <SelectItem value="all">All Years</SelectItem>
+        <SelectItem
+          v-for="y in availableYears"
+          :key="y"
+          :value="y.toString()"
+        >
+          {{ y }}
+        </SelectItem>
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+</div>
+
+
         <!-- Right: Add Batch Button -->
         <Button size="sm" variant="secondary" class="flex items-center gap-2" @click="openModal">
           <Plus class="w-4 h-4" />
@@ -300,75 +147,84 @@ onMounted(fetchBatch);
               <TableHead @click="() => toggleSort('name')">Name</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Access Key</TableHead>
+              <TableHead>Duration</TableHead>
               <TableHead>Status</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
 
-          <TableBody>
-            <template v-if="isLoading">
-              <TableRow v-for="n in 1" :key="n">
-                <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
-                <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
-                <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
-                <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
-                <TableCell><Skeleton class="h-4 w-20 rounded" /></TableCell>
-                <TableCell><Skeleton class="h-4 w-10 rounded" /></TableCell>
-              </TableRow>
-            </template>
-            <template v-else>
-              <TableRow v-for="b in filteredBatch" :key="b.id">
-                <TableCell>{{ new Date(b.created_at).getFullYear() }}</TableCell>
-                <TableCell>{{ b.name }}</TableCell>
-                <TableCell>{{ b.description }}</TableCell>
-                <TableCell>{{ b.access_key }}</TableCell>
-                <TableCell>
-                  <Lock v-if="b.isLocked" class="w-5 h-5 text-red-500" />
-                  <Unlock v-else class="w-5 h-5 text-green-500" />
-                  <!-- {{ b.isLocked ? 'Locked' : 'Active' }} -->
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                      <Button variant="ghost" size="sm" class="flex items-center gap-1">
-                        <Ellipsis class="w-4 h-4 mr-2" />
-                      </Button>
-                    </DropdownMenuTrigger>
+      <TableBody>
+  <template v-if="isLoading">
+    <TableRow v-for="n in 1" :key="n">
+      <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
+      <TableCell><Skeleton class="h-4 w-32 rounded" /></TableCell>
+      <TableCell><Skeleton class="h-4 w-48 rounded" /></TableCell>
+      <TableCell><Skeleton class="h-4 w-24 rounded" /></TableCell>
+      <TableCell><Skeleton class="h-4 w-20 rounded" /></TableCell>
+      <TableCell><Skeleton class="h-4 w-10 rounded" /></TableCell>
+    </TableRow>
+  </template>
 
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
+  <template v-else>
+    <template v-for="(group, year) in groupedByYear(filteredBatch as Batch[])" :key="year">
+      <TableRow v-for="(b, index) in group" :key="b.id">
+        <!-- Year cell only on first row of this group -->
+        <TableCell
+          v-if="index === 0"
+          :rowspan="group.length"
+          class="text-center font-bold"
+        >
+          {{ year }}
+        </TableCell>
 
-                      <DropdownMenuItem @click="goToResults(b.id)">
-                        <RatioIcon class="w-4 h-4 mr-2" /> Results
-                      </DropdownMenuItem>
-                      <DropdownMenuItem @click="print(b.id)">
-                        <Printer class="w-4 h-4 mr-2" /> Print
-                      </DropdownMenuItem>
-                      <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
-                        <Lock class="w-4 h-4 mr-2" /> Lock
-                      </DropdownMenuItem>
-                      <DropdownMenuItem v-else @click="activateBatch(b.id)">
-                        <Unlock class="w-4 h-4 mr-2" /> Activate
-                      </DropdownMenuItem>
+        <TableCell>{{ b.name }}</TableCell>
+        <TableCell>{{ b.description }}</TableCell>
+        <TableCell>{{ b.access_key }}</TableCell>
+        <TableCell>45 Minutes</TableCell>
+        <TableCell>
+          <Lock v-if="b.isLocked" class="w-5 h-5 text-red-500" />
+          <Unlock v-else class="w-5 h-5 text-green-500" />
+        </TableCell>
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="ghost" size="sm" class="flex items-center gap-1">
+                <Ellipsis class="w-4 h-4 mr-2" />
+              </Button>
+            </DropdownMenuTrigger>
 
-                      <DropdownMenuItem @click="openEditModal(b.id)">
-                        <Pencil class="w-4 h-4 mr-2" /> Edit
-                      </DropdownMenuItem>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-                      <DropdownMenuItem @click="deleteBatch(b.id)" class="text-red-500">
-                        <Trash class="w-4 h-4 mr-2" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
+              <DropdownMenuItem @click="goToResults(b.id)">
+                <RatioIcon class="w-4 h-4 mr-2" /> Results
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="print(b.id)">
+                <Printer class="w-4 h-4 mr-2" /> Print
+              </DropdownMenuItem>
+              <DropdownMenuItem v-if="!b.isLocked" @click="lockBatch(b.id)">
+                <Lock class="w-4 h-4 mr-2" /> Lock
+              </DropdownMenuItem>
+              <DropdownMenuItem v-else @click="activateBatch(b.id)">
+                <Unlock class="w-4 h-4 mr-2" /> Activate
+              </DropdownMenuItem>
 
-              <TableRow v-if="!batch.length">
-                <TableCell colspan="3" class="text-center"> No data available. </TableCell>
-              </TableRow>
-            </template>
-          </TableBody>
+              <DropdownMenuItem @click="openEditModal(b.id)">
+                <Pencil class="w-4 h-4 mr-2" /> Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
+    </template>
+
+    <TableRow v-if="!filteredBatch.length">
+      <TableCell colspan="7" class="text-center">No data available.</TableCell>
+    </TableRow>
+  </template>
+</TableBody>
+
         </Table>
       </div>
 
