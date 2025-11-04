@@ -26,6 +26,7 @@ import ViewEnrolledStudent from '@/Pages/Admin/ViewEnrolledStudent.vue';
 import api from '@/Api/Axios';
 
 import { useAuthStore } from '@/stores/useAuthStore';
+import TempPassword from '@/Pages/Auth/TempPassword.vue';
 
 // --- Extend Vue Router Meta --- //
 declare module 'vue-router' {
@@ -91,6 +92,12 @@ const routes: RouteRecordRaw[] = [
   },
 
   // --- Admin/Management Routes --- //
+  {
+  path: '/users/:id/temp-password',
+  name: 'TempPassword',
+  component: TempPassword,
+},
+
   {
     path: '/questions',
     name: 'Questions',

@@ -5,19 +5,38 @@
 
       <!-- Tabs -->
       <Tabs v-model:value="activeTab" class="space-y-4">
+        <!-- Tab buttons -->
         <TabsList>
-          <TabsTrigger value="school">School</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="preference">Preference</TabsTrigger>
+          <TabsTrigger value="school">
+            <School2 class="w-4 h-4 mr-2" />
+            School
+          </TabsTrigger>
+
+          <TabsTrigger value="account">
+            <Settings class="w-4 h-4 mr-2" />
+            Account
+          </TabsTrigger>
+
+          <TabsTrigger value="preference">
+            <SlidersHorizontal class="w-4 h-4 mr-2" />
+            Preference
+          </TabsTrigger>
+
+          <TabsTrigger value="users">
+            <User class="w-4 h-4 mr-2" />
+            Users
+          </TabsTrigger>
         </TabsList>
 
-        <Preference />
+        <!-- Tab contents -->
+
         <School />
+
         <Account />
 
-        <!-- School Tab -->
+        <Preference />
 
-        <!-- Account Tab -->
+        <Users />
       </Tabs>
     </div>
   </AppLayout>
@@ -32,10 +51,11 @@ const mode = useColorMode();
 import { ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import api from '@/Api/Axios';
+import { School2, User, Settings, SlidersHorizontal } from 'lucide-vue-next';
 import Preference from '@/Pages/Admin/Settings/Preference.vue';
 import School from '@/Pages/Admin/Settings/School.vue';
 import Account from '@/Pages/Admin/Settings/Account.vue';
+import Users from '@/Pages/Admin/Settings/Users.vue';
 
 // Active tab
 const activeTab = ref('school');

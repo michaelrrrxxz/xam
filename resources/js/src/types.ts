@@ -97,12 +97,11 @@ export interface Question {
   ch5: string;
   ch5_image: UploadableField | null;
 
-  answer: "ch1" | "ch2" | "ch3" | "ch4" | "ch5";
+  answer: 'ch1' | 'ch2' | 'ch3' | 'ch4' | 'ch5';
 
   qtype: string;
-  format: "text" | "photo"
+  format: 'text' | 'photo';
 }
-
 
 export interface Recent {
   id: number;

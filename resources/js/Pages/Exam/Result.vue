@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col items-center bg-background p-4 space-y-6">
     <!-- Top Center Logo -->
-    <Logo class="h-20 w-20" />
+    <Logo :logo-size="24" />
     <Card class="w-full max-w-3xl shadow-md p-6">
       <CardHeader class="text-center">
         <CardTitle class="text-2xl font-bold">Exam Results</CardTitle>

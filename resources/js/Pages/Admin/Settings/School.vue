@@ -21,7 +21,6 @@
     </Card>
   </TabsContent>
 </template>
-
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { TabsContent } from '@/components/ui/tabs';
@@ -33,7 +32,12 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'vue-sonner';
 import api from '@/Api/Axios';
 
-import { SchoolSettingsForm } from '@/src/types';
+// import { SchoolSettingsForm } from '@/src/types';
+
+interface SchoolSettingsForm {
+  school_name: string;
+  school_logo: File | null;
+}
 
 // School form state
 const schoolForm = ref<SchoolSettingsForm>({

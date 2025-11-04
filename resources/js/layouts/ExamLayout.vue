@@ -9,7 +9,7 @@ const mode = useColorMode();
     <!-- Centered auth container -->
     <main class="flex flex-1 flex-col items-center justify-center px-4 py-8 gap-6">
       <!-- App logo OUTSIDE card -->
-      <Logo />
+      <Logo :logo-size="32" />
 
       <!-- Auth card -->
       <div class="w-full max-w-md space-y-6 p-6 rounded-xl shadow-md border bg-card">

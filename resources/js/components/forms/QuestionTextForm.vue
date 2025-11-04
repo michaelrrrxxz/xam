@@ -122,7 +122,7 @@ interface QuestionForm {
   answer: string;
   qtype: string;
   [key: `ch${number}`]: string;
- format: "text" | "photo";
+  format: 'text' | 'photo';
 }
 
 const props = defineProps<{

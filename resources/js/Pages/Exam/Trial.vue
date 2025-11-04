@@ -3,7 +3,7 @@
     <Card class="w-full max-w-4xl shadow-md">
       <!-- Exam Header -->
       <CardHeader class="flex flex-col items-center space-y-3">
-        <Logo class="h-16 w-16 mx-auto" />
+        <Logo :logo-size="24" />
         <CardTitle class="text-2xl font-bold tracking-wide text-center"> Trial </CardTitle>
       </CardHeader>
 
@@ -134,19 +134,9 @@ const allAnswered = computed(
     questions.value.length > 0 && questions.value.every((q) => answers.value[q.id] !== undefined)
 );
 
-// ✅ Timer (45 minutes)
-const totalTime = 45 * 60; // 2700 seconds
-const timeLeft = ref(totalTime);
-let timerInterval: number | null = null;
 
 onMounted(async () => {
-  watch(
-    answers,
-    (newAnswers) => {
-      localStorage.setItem('examAnswers', JSON.stringify(newAnswers));
-    },
-    { deep: true }
-  );
+
 
   const storedStudent = localStorage.getItem('studentData');
   const storedSchool = localStorage.getItem('schoolData');

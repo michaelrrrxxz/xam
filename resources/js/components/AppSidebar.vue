@@ -90,7 +90,7 @@ const data = ref({
   <Sidebar v-bind="props">
     <SidebarHeader>
       <!-- <TeamSwitcher :teams="data.teams" /> -->
-      <Logo />
+      <Logo :logo-size="24" />
       <Separator></Separator>
     </SidebarHeader>
     <SidebarContent>

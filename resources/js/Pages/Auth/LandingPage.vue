@@ -22,7 +22,7 @@ localStorage.removeItem('studentData');
   <div class="min-h-screen flex flex-col bg-background">
     <!-- Hero Section -->
     <section class="container mx-auto py-20 md:py-32 px-6">
-      <Logo />
+      <Logo :logo-size="32" />
       <div class="flex flex-col items-center text-center space-y-8">
         <!-- Badge -->
         <Badge variant="outline" class="text-sm py-2">

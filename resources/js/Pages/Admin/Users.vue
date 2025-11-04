@@ -1,8 +1,9 @@
-<script lang="ts" setup>
-import { ref, onMounted, reactive, computed } from 'vue';
-import api from '@/Api/Axios';
-import { useMediaQuery } from '@vueuse/core';
-import { useRoute } from 'vue-router';
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+import { useUsers } from '@/composables/user/useUsers';
+import { useUserForm } from '@/composables/user/useUserForm';
+import { Plus } from 'lucide-vue-next';
+// ✅ shadcn/ui imports
 import {
   Table,
   TableHeader,
@@ -11,6 +12,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
+
 import {
   Dialog,
   DialogContent,
@@ -18,6 +20,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 import {
   Drawer,
   DrawerContent,
@@ -35,150 +39,27 @@ import {
 } from '@/components/ui/drawer';
 
 import { Button } from '@/components/ui/button';
-import { toast } from 'vue-sonner';
-import 'vue-sonner/style.css';
+import { Skeleton } from '@/components/ui/skeleton';
 
+// ✅ icons
 import { Pencil, Trash, Ellipsis, BadgeQuestionMark } from 'lucide-vue-next';
+
+// ✅ layout & child components
 import AppLayout from '@/layouts/AppLayout.vue';
 import UserForm from '@/components/UserForm.vue';
 
-import { useRouter } from 'vue-router';
+import { useMediaQuery } from '@vueuse/core';
 
-import { Skeleton } from '@/components/ui/skeleton';
+const isDesktop = useMediaQuery('(min-width: 768px)');
+// ✅ composables
+const { users, isLoading, searchQuery, filteredUsers, deleteUser } = useUsers();
+const { form, errors, isSaving, isOpen, isEditOpen, openModal, openEditModal, saveUser } =
+  useUserForm();
 
 const router = useRouter();
-
-// User interface
-import { User } from '@/types';
-
-// Reactive States
-const users = ref<User[]>([]);
-const isOpen = ref(false);
-const isEditOpen = ref(false);
-const isSaving = ref(false);
-const errors = ref<{ name?: string }>({});
-const isDesktop = useMediaQuery('(min-width: 768px)');
-const searchQuery = ref('');
-const isLoading = ref(true);
-// Unified form state
-const form = reactive<{ id: number | null; name: string; email: string }>({
-  id: null,
-  name: '',
-  email: '',
-});
-
-// Fetch all users
-const fetchUsers = async () => {
-  isLoading.value = true;
-  try {
-    const response = await api.get('admin/user');
-    users.value = response.data;
-  } catch (error) {
-    console.warn(error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Open Add Modal
-const openModal = () => {
-  resetForm();
-  isOpen.value = true;
-};
-
-// Open Edit Modal
-const openEditModal = async (id: number) => {
-  const response = await api.get(`/user/${id}`);
-  const user = response.data;
-  if (user) {
-    form.id = user.id;
-    form.name = user.name;
-    form.email = user.email || '';
-    isEditOpen.value = true;
-  }
-};
-
-// Reset form
-const resetForm = () => {
-  form.id = null;
-  form.name = '';
-  form.email = '';
-};
-
-const openQuestionsPage = (id: number) => {
-  router.push(`/questions/${id}`);
-};
-
-// Save User (Add or Update)
-const saveUser = async () => {
-  errors.value = {};
-  isSaving.value = true;
-  try {
-    if (form.id) {
-      // Update existing user
-      await api.put(`admin/user/${form.id}`, {
-        name: form.name,
-        email: form.email,
-      });
-      toast.success('User updated successfully!');
-    } else {
-      // Create new user
-      await api.post('admin/user', {
-        name: form.name,
-        email: form.email,
-      });
-      toast.success('User added successfully!');
-    }
-    await fetchUsers();
-    resetForm();
-    isOpen.value = false;
-    isEditOpen.value = false;
-  } catch (error: any) {
-    if (error.response?.data?.errors) {
-      const backendErrors = error.response.data.errors;
-      errors.value = Object.keys(backendErrors).reduce(
-        (acc, key) => {
-          acc[key] = backendErrors[key][0];
-          return acc;
-        },
-        {} as { [key: string]: string }
-      );
-    } else {
-      toast.error('Something went wrong.');
-    }
-  } finally {
-    isSaving.value = false;
-  }
-};
-
-// Delete User
-const deleteUser = async (id: number) => {
-  toast('Are you sure?', {
-    position: 'top-center',
-    description: 'This will permanently delete the user.',
-    action: {
-      label: 'Confirm',
-      onClick: async () => {
-        try {
-          await api.delete(`/user/${id}`);
-          toast.success('User deleted successfully!');
-          await fetchUsers();
-        } catch {
-          toast.error('Failed to delete user.');
-        }
-      },
-    },
-  });
-};
-
-const filteredUsers = computed(() => {
-  if (!searchQuery.value) return users.value;
-  return users.value.filter((e) => e.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
-});
-
-// Fetch users on mount
-onMounted(fetchUsers);
+const openQuestionsPage = (id: number) => router.push(`/questions/${id}`);
 </script>
+
 <template>
   <AppLayout>
     <section class="flex flex-col md:p-6">
@@ -267,7 +148,7 @@ onMounted(fetchUsers);
             <DialogDescription>Fill out the form to create a new user.</DialogDescription>
           </DialogHeader>
           <!-- reuse your form -->
-          <UserForm :form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
+          <UserForm v-model:form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
         </DialogContent>
       </Dialog>
 
@@ -279,7 +160,7 @@ onMounted(fetchUsers);
             <DrawerDescription>Fill out the form to create a new user.</DrawerDescription>
           </DrawerHeader>
           <!-- reuse the same form -->
-          <UserForm :form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
+          <UserForm v-model:form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
         </DrawerContent>
       </Drawer>
 
@@ -289,7 +170,7 @@ onMounted(fetchUsers);
             <DialogTitle>Edit User</DialogTitle>
             <DialogDescription>Update the details of the user.</DialogDescription>
           </DialogHeader>
-          <UserForm :form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
+          <UserForm v-model:form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
         </DialogContent>
       </Dialog>
 
@@ -299,7 +180,7 @@ onMounted(fetchUsers);
             <DrawerTitle>Edit User</DrawerTitle>
             <DrawerDescription>Update the details of the user.</DrawerDescription>
           </DrawerHeader>
-          <UserForm :form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
+          <UserForm v-model:form="form" :errors="errors" :isSaving="isSaving" @save="saveUser" />
         </DrawerContent>
       </Drawer>
     </section>

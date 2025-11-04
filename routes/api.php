@@ -22,6 +22,11 @@ use  App\Http\Controllers\Admin\ImportEnrolledStudentController;
  use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
 
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+
+
+
 
 Route::middleware(['auth:sanctum'])->get('/v1/user', function (Request $request) {
     return $request->user();
@@ -40,6 +45,10 @@ Route::prefix('v1')->group(function () {
 
 
     Route::prefix('admin')->group(function(){
+        Route::middleware(['auth:sanctum'])->post(
+            'users/{id}/reset-password',
+            ResetPasswordController::class
+        );
         Route::apiResource('result', AdminResultController::class)->only(['index']);
         Route::apiResource('user', UserController::class);
         Route::get('/results/batch/{id}', [AdminResultController::class, 'resultsByBatch']);

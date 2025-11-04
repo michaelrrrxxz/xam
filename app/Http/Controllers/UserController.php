@@ -34,6 +34,12 @@ public function store(StoreUserRequest $request)
         ], 201);
     }
 
+
+        public function show(User $user)
+    {
+        return response()->json($user,200);
+    }
+
         public function destroy(User $user)
     {
         $user = $user->delete();

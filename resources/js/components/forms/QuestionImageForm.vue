@@ -62,10 +62,12 @@
           accept="image/*"
           @change="(e) => handleFileUpload(e, `${choice.key}_image`)"
         />
-            <div v-if="(form[`${choice.key}_image`] as UploadableField | null)?.preview" class="mt-2">
-        <img :src="(form[`${choice.key}_image`] as UploadableField).preview" class="max-h-32 rounded border" />
+        <div v-if="(form[`${choice.key}_image`] as UploadableField | null)?.preview" class="mt-2">
+          <img
+            :src="(form[`${choice.key}_image`] as UploadableField).preview"
+            class="max-h-32 rounded border"
+          />
         </div>
-
       </div>
 
       <!-- Correct Answer -->
@@ -133,11 +135,7 @@ interface QuestionForm {
   ch5_image: UploadableField | null;
   answer: string;
   qtype: string;
-format: "text" | "photo";
-
-
-
-
+  format: 'text' | 'photo';
 }
 
 const props = defineProps<{

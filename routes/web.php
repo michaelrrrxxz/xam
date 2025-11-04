@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
  use App\Http\Controllers\BatchController;
 
 
+
 Route::get('/results/{id}/print', [ResultController::class, 'print'])->name('results.print');
 Route::get('batch/results/{id}/print', [BatchController::class, 'print'])->name('batch.print');
 
